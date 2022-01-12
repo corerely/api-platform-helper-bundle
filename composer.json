@@ -1,0 +1,23 @@
+{
+    "name": "corerely/api-platform-helper-bundle",
+    "description": "Api Platform helper filters etc..",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Corerely\\ApiPlatformHelperBundle\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Andrii Oprysko",
+            "email": "anjey.link@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "slevomat/coding-standard": "^7.0",
+        "phpunit/phpunit": "^9.5"
+    }
+}
