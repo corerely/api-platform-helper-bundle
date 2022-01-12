@@ -8,6 +8,11 @@
             "Corerely\\ApiPlatformHelperBundle\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Corerely\\ApiPlatformHelperBundle\\Tests": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Andrii Oprysko",
@@ -16,6 +21,10 @@
     ],
     "minimum-stability": "dev",
     "prefer-stable": true,
+    "require": {
+        "php": "^8.0",
+        "api-platform/core": "^2.6"
+    },
     "require-dev": {
         "slevomat/coding-standard": "^7.0",
         "phpunit/phpunit": "^9.5"
