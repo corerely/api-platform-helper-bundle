@@ -12,7 +12,7 @@ final class TextSearchFilter extends AbstractContextAwareFilter
 {
     private string $paramName = 'q';
 
-    protected function filterProperty(string $property, $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null)
+    protected function filterProperty(string $property, $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null): void
     {
         // If filter property is not a "q"
         if ($this->paramName !== $property) {
