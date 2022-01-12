@@ -1,1 +1,4 @@
 /vendor/
+.phpcs-cache
+.idea
+composer.lock
