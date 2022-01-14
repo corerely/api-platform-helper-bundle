@@ -5,13 +5,15 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\ContextAwareQueryCollectionExtensionInterface;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Uid\Uuid;
 
 final class IdentifierCollectionFilterExtension implements ContextAwareQueryCollectionExtensionInterface
 {
+    use FilterByIdsCommonTrait;
+
     /**
      * Identifier possible fields
      */
@@ -26,7 +28,7 @@ final class IdentifierCollectionFilterExtension implements ContextAwareQueryColl
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = []): void
     {
-        $value = $this->normalizeValue($context);
+        $value = $this->normalizeValue($context['filters']['id'] ?? null);
         if (null === $value) {
             return;
         }
@@ -36,52 +38,11 @@ final class IdentifierCollectionFilterExtension implements ContextAwareQueryColl
             return;
         }
 
-        $this->andWhere($queryBuilder, $queryNameGenerator, $ids);
-    }
-
-    private function andWhere(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, array $ids): void
-    {
         if (self::IDENTIFIER_FIELD_UUID === $this->identifierFieldName) {
-            $ids = array_map(static fn(string $uuid) => Uuid::fromString($uuid)->toBinary(), $ids);
+            $ids = $this->uuidsToBinary($ids);
         }
 
-        $alias = $queryBuilder->getRootAliases()[0];
-        $fieldName = sprintf('%s.%s', $alias, $this->identifierFieldName);
-        $parameterName = ':' . $queryNameGenerator->generateParameterName($this->identifierFieldName);
-
-        if (count($ids) > 1) {
-            $queryBuilder
-                ->andWhere($queryBuilder->expr()->in($fieldName, $parameterName))
-                ->setParameter($parameterName, $ids);
-
-            return;
-        }
-
-        $queryBuilder
-            ->andWhere($queryBuilder->expr()->eq($fieldName, $parameterName))
-            ->setParameter($parameterName, $ids[0]);
-    }
-
-    private function normalizeValue(array $context): ?array
-    {
-        $value = $context['filters']['id'] ?? null;
-
-        if (null === $value) {
-            return null;
-        }
-
-        if (!is_array($value)) {
-            $value = [$value];
-        }
-
-        // Supports only IRI
-        $value = array_filter($value, static fn(mixed $val) => is_string($val) && '' !== $val);
-
-        if (empty($value)) {
-            return null;
-        }
-
-        return array_values($value);
+        $this->andWhere($queryBuilder, $queryNameGenerator, $queryBuilder->getRootAliases()[0], $this->identifierFieldName, $ids);
     }
 
     private function getIdsAndDetectIdentifierField(array $items, string $resourceClass): array

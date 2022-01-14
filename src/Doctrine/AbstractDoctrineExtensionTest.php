@@ -5,6 +5,7 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ObjectRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -25,5 +26,10 @@ abstract class AbstractDoctrineExtensionTest extends KernelTestCase
 
         $this->managerRegistry = self::getContainer()->get('doctrine');
         $this->repository = $this->managerRegistry->getManagerForClass($this->entityClassName)->getRepository($this->entityClassName);
+    }
+
+    protected function createQueryBuilder(string $alias = 'o'): QueryBuilder
+    {
+        return $this->repository->createQueryBuilder($alias);
     }
 }

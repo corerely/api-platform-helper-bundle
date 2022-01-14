@@ -41,7 +41,10 @@ class Dummy
         return $this->uuid;
     }
 
-    public function getDummyAssociations(): ArrayCollection|Collection
+    /**
+     * @return Collection<int, DummyAssociation>
+     */
+    public function getDummyAssociations(): Collection
     {
         return $this->dummyAssociations;
     }

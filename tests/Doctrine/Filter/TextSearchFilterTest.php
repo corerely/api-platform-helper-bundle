@@ -35,7 +35,7 @@ class TextSearchFilterTest extends AbstractDoctrineExtensionTest
         $result = $queryBuilder->getQuery()->getResult();
 
         $this->assertCount(1, $result);
-        $this->assertSame($dummyExpectToFound->object(), $result[0]);
+        $this->assertSame($dummyExpectToFound->getId(), $result[0]->getId());
     }
 
     public function testFilterByAssociationProperty(): void
@@ -57,7 +57,7 @@ class TextSearchFilterTest extends AbstractDoctrineExtensionTest
         $result = $queryBuilder->getQuery()->getResult();
 
         $this->assertCount(1, $result);
-        $this->assertSame($dummyWithAssociationExpectToFound->object(), $result[0]);
+        $this->assertSame($dummyWithAssociationExpectToFound->getId(), $result[0]->getId());
     }
 
     private function createFilter(array $filters): TextSearchFilter

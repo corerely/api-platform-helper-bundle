@@ -20,10 +20,12 @@ class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
     {
         $ext = new OrderByFieldsExtension('order', ['name']);
 
-        $d1 = DummyFactory::createOne(['name' => 'aName'])->object();
-        $d2 = DummyFactory::createOne(['name' => 'dName'])->object();
-        $d3 = DummyFactory::createOne(['name' => 'cName'])->object();
-        $d4 = DummyFactory::createOne(['name' => 'bName'])->object();
+        $d1 = DummyFactory::createOne(['name' => 'aName']);
+        $d2 = DummyFactory::createOne(['name' => 'dName']);
+        $d3 = DummyFactory::createOne(['name' => 'cName']);
+        $d4 = DummyFactory::createOne(['name' => 'bName']);
+
+        DummyFactory::assert()->count(4);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
         $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['order' => ['name' => $order]]]);
@@ -32,7 +34,7 @@ class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
         $expect = $order === 'asc' ? [$d1, $d4, $d3, $d2] : [$d2, $d3, $d4, $d1];
 
         foreach ($expect as $key => $item) {
-            $this->assertSame($item, $result[$key]);
+            $this->assertSame($item->getId(), $result[$key]->getId());
         }
     }
 

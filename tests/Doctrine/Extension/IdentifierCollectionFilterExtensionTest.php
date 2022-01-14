@@ -17,20 +17,23 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
 
         $dummy = DummyFactory::createOne();
         $id = $dummy->getId();
+        $iri = '/api/' . $id;
+
+        DummyFactory::assert()->count(4);
 
         $mockedRouter = $this->createMock(RouterInterface::class);
-        $mockedRouter->expects($this->once())->method('match')->with($id)->willReturn(
+        $mockedRouter->expects($this->once())->method('match')->with($iri)->willReturn(
             ['_api_identifiers' => ['id'], 'id' => $id],
         );
 
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
-        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => (string)$id]]);
+        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $iri]]);
 
         $result = $queryBuilder->getQuery()->getResult();
         $this->assertCount(1, $result);
-        $this->assertSame($dummy->object(), $result[0]);
+        $this->assertSame($dummy->getId(), $result[0]->getId());
     }
 
     public function testFilterWithIds(): void
@@ -42,6 +45,8 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $id1 = $dummy1->getId();
         $id2 = $dummy2->getId();
 
+        DummyFactory::assert()->count(5);
+
         $mockedRouter = $this->createMock(RouterInterface::class);
         $mockedRouter->expects($this->exactly(2))->method('match')->willReturn(
             ['_api_identifiers' => ['id'], 'id' => $id1],
@@ -51,12 +56,12 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
-        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => [(string)$id1, (string)$id2]]]);
+        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => ['/api/' . $id1, '/api/' . $id2]]]);
 
         $result = $queryBuilder->getQuery()->getResult();
         $this->assertCount(2, $result);
-        $this->assertSame($dummy1->object(), $result[0]);
-        $this->assertSame($dummy2->object(), $result[1]);
+        $this->assertSame($dummy1->getId(), $result[0]->getId());
+        $this->assertSame($dummy2->getId(), $result[1]->getId());
     }
 
     public function testFilterWithUuid(): void
@@ -66,19 +71,21 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $dummy = DummyFactory::createOne();
         $uuid = (string)$dummy->getUuid();
 
+        DummyFactory::assert()->count(4);
+
         $mockedRouter = $this->createMock(RouterInterface::class);
-        $mockedRouter->expects($this->once())->method('match')->with($uuid)->willReturn(
+        $mockedRouter->expects($this->once())->method('match')->with('/api/' . $uuid)->willReturn(
             ['_api_identifiers' => ['uuid'], 'uuid' => $uuid],
         );
 
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
-        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $uuid]]);
+        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => '/api/' . $uuid]]);
 
         $result = $queryBuilder->getQuery()->getResult();
         $this->assertCount(1, $result);
-        $this->assertSame($dummy->object(), $result[0]);
+        $this->assertSame($dummy->getId(), $result[0]->getId());
     }
 
     public function testFilterWithUuids(): void
@@ -90,6 +97,8 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $uuid1 = (string)$dummy1->getUuid();
         $uuid2 = (string)$dummy2->getUuid();
 
+        DummyFactory::assert()->count(5);
+
         $mockedRouter = $this->createMock(RouterInterface::class);
         $mockedRouter->expects($this->exactly(2))->method('match')->willReturn(
             ['_api_identifiers' => ['uuid'], 'uuid' => $uuid1],
@@ -99,11 +108,11 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
-        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => [$uuid1, $uuid2]]]);
+        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => ['/api/' . $uuid1, '/api/' . $uuid2]]]);
 
         $result = $queryBuilder->getQuery()->getResult();
         $this->assertCount(2, $result);
-        $this->assertSame($dummy1->object(), $result[0]);
-        $this->assertSame($dummy2->object(), $result[1]);
+        $this->assertSame($dummy1->getId(), $result[0]->getId());
+        $this->assertSame($dummy2->getId(), $result[1]->getId());
     }
 }
