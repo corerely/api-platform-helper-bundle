@@ -8,6 +8,9 @@ on:
 jobs:
     build:
         runs-on: ${{ matrix.operating-system }}
+        env:
+            SYMFONY_DEPRECATIONS_HELPER: disabled
+
         name: PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }}
         strategy:
             matrix:
