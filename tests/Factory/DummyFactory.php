@@ -5,7 +5,12 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Factory;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Proxy;
 
+/**
+ * @method static Dummy|Proxy createOne(array $attributes = [])
+ * @method static Dummy[]|Proxy[] createMany(int $number, $attributes = [])
+ */
 final class DummyFactory extends ModelFactory
 {
     public function withAssociations(int $quantity = 2): self
