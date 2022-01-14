@@ -55,10 +55,10 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
 
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
-        $queryBuilder = $this->repository->createQueryBuilder('o');
+        $queryBuilder = $this->createQueryBuilder();
         $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => ['/api/' . $id1, '/api/' . $id2]]]);
 
-        $result = $queryBuilder->getQuery()->getResult();
+        $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
         $this->assertCount(2, $result);
         $this->assertSame($dummy1->getId(), $result[0]->getId());
         $this->assertSame($dummy2->getId(), $result[1]->getId());
@@ -107,10 +107,10 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
 
         $ext = new IdentifierCollectionFilterExtension($mockedRouter);
 
-        $queryBuilder = $this->repository->createQueryBuilder('o');
+        $queryBuilder = $this->createQueryBuilder();
         $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => ['/api/' . $uuid1, '/api/' . $uuid2]]]);
 
-        $result = $queryBuilder->getQuery()->getResult();
+        $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
         $this->assertCount(2, $result);
         $this->assertSame($dummy1->getId(), $result[0]->getId());
         $this->assertSame($dummy2->getId(), $result[1]->getId());
