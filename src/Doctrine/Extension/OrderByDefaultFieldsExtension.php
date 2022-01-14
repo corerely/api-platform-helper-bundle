@@ -10,15 +10,14 @@ use Doctrine\ORM\QueryBuilder;
 
 final class OrderByDefaultFieldsExtension implements ContextAwareQueryCollectionExtensionInterface
 {
-    /**
-     * Filter operand name ['order' => ['createdAt' => 'desc']]
-     */
-    private string $paramName = 'order';
 
     /**
-     * Allowed to sort by this fields by default
+     * @var string $paramName ['order' => ['createdAt' => 'desc']]
+     * @var array $fields ['createdAt', 'updatedAt']
      */
-    private array $fields = ['createdAt', 'updatedAt', 'id'];
+    public function __construct(private string $paramName, private array $fields)
+    {
+    }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = []): void
     {
