@@ -18,3 +18,8 @@ doctrine:
                 dir: '%kernel.project_dir%/Fixtures/Entity'
                 prefix: 'Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity'
                 alias: App
+
+# See full configuration: https://github.com/zenstruck/foundry#full-default-bundle-configuration
+zenstruck_foundry:
+    # Whether to auto-refresh proxies by default (https://github.com/zenstruck/foundry#auto-refresh)
+    auto_refresh_proxies: true

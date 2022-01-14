@@ -10,8 +10,6 @@ use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Zenstruck\Foundry\Proxy;
 
 class TextSearchFilterTest extends AbstractDoctrineExtensionTest
@@ -29,7 +27,7 @@ class TextSearchFilterTest extends AbstractDoctrineExtensionTest
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = $this->managerRegistry->getManagerForClass(Dummy::class)->getRepository(Dummy::class)->createQueryBuilder('o');
 
-        $filter = $this->createFilter($filters);
+        $filter = $this->createFilter();
         $filter->apply($queryBuilder, new QueryNameGenerator(), Dummy::class, 'op', ['filters' => $filters]);
 
         $result = $queryBuilder->getQuery()->getResult();
@@ -51,7 +49,7 @@ class TextSearchFilterTest extends AbstractDoctrineExtensionTest
         /** @var QueryBuilder $queryBuilder */
         $queryBuilder = $this->managerRegistry->getManagerForClass(Dummy::class)->getRepository(Dummy::class)->createQueryBuilder('o');
 
-        $filter = $this->createFilter($filters);
+        $filter = $this->createFilter();
         $filter->apply($queryBuilder, new QueryNameGenerator(), Dummy::class, 'op', ['filters' => $filters]);
 
         $result = $queryBuilder->getQuery()->getResult();
@@ -60,12 +58,9 @@ class TextSearchFilterTest extends AbstractDoctrineExtensionTest
         $this->assertSame($dummyWithAssociationExpectToFound->getId(), $result[0]->getId());
     }
 
-    private function createFilter(array $filters): TextSearchFilter
+    private function createFilter(): TextSearchFilter
     {
-        $requestStack = new RequestStack();
-        $requestStack->push(Request::create('/api/dummies', 'GET', $filters));
-
-        return new TextSearchFilter($this->managerRegistry, $requestStack, properties: ['name' => null, 'dummyAssociations.description' => null]);
+        return new TextSearchFilter($this->managerRegistry, properties: ['name' => null, 'dummyAssociations.description' => null]);
     }
 
     /**
