@@ -23,18 +23,18 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.0",
-        "api-platform/core": "^2.6",
-        "symfony/http-kernel": "^6.0",
-        "doctrine/orm": "^2.11"
+        "api-platform/core": "^2.5",
+        "symfony/http-kernel": "^5.3 || ^6.0",
+        "doctrine/orm": "^2.7"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^2.5",
         "slevomat/coding-standard": "^7.0",
         "phpunit/phpunit": "^9.5",
-        "symfony/framework-bundle": "^6.0",
-        "symfony/phpunit-bridge": "^6.0",
-        "symfony/yaml": "^6.0",
-        "zenstruck/foundry": "^1.16",
-        "symfony/uid": "^6.0"
+        "symfony/framework-bundle": "^5.3 || ^6.0",
+        "symfony/phpunit-bridge": "^5.3 || ^6.0",
+        "symfony/yaml": "^5.3 || ^6.0",
+        "symfony/uid": "^5.3 || ^6.0",
+        "zenstruck/foundry": "^1.16"
     }
 }
