@@ -1,0 +1,36 @@
+name: Bundle Test
+
+on:
+    push:
+        branches: [ 'master' ]
+    pull_request:
+        branches: [ 'master' ]
+jobs:
+    build:
+        runs-on: ${{ matrix.operating-system }}
+        name: PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }}
+        strategy:
+            matrix:
+                operating-system: [ ubuntu-latest ]
+                php: [ '8.0', '8.1' ]
+                symfony: [ '5.3.*', '5.4.*', '6.0.*' ]
+
+        steps:
+            - uses: actions/checkout@master
+
+            - name: Setup PHP ${{ matrix.php }}
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  tools: flex
+
+            - name: Download dependencies
+              env:
+                  SYMFONY_REQUIRE: ${{ matrix.symfony }}
+              uses: ramsey/composer-install@v1
+
+            - name: Run code sniffer
+              run: ./vendor/bin/phpcs
+
+            - name: Run test suite on PHP ${{ matrix.php }} and Symfony ${{ matrix.symfony }}
+              run: ./vendor/bin/phpunit
