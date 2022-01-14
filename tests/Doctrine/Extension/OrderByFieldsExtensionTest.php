@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
-use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByDefaultFieldsExtension;
+use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
-class OrderByDefaultFieldsExtensionTest extends TestCase
+class OrderByFieldsExtensionTest extends TestCase
 {
 
     /**
@@ -17,7 +17,7 @@ class OrderByDefaultFieldsExtensionTest extends TestCase
      */
     public function testApplyToCollectionWithSupportedField(string $order): void
     {
-        $ext = new OrderByDefaultFieldsExtension('order', ['createdAt']);
+        $ext = new OrderByFieldsExtension('order', ['createdAt']);
 
         $mockedQB = $this->createMock(QueryBuilder::class);
         $mockedQB->expects($this->once())->method('getRootAliases')->willReturn(['o']);
@@ -34,7 +34,7 @@ class OrderByDefaultFieldsExtensionTest extends TestCase
 
     public function testApplyToCollectionWithNotSupportedField(): void
     {
-        $ext = new OrderByDefaultFieldsExtension('order', ['createdAt']);
+        $ext = new OrderByFieldsExtension('order', ['createdAt']);
 
         $mockedQB = $this->createMock(QueryBuilder::class);
         $mockedQB->expects($this->never())->method('getRootAliases');
@@ -45,7 +45,7 @@ class OrderByDefaultFieldsExtensionTest extends TestCase
 
     public function testApplyToCollectionWithNotSupportedOrder(): void
     {
-        $ext = new OrderByDefaultFieldsExtension('order', ['createdAt']);
+        $ext = new OrderByFieldsExtension('order', ['createdAt']);
 
         $mockedQB = $this->createMock(QueryBuilder::class);
         $mockedQB->expects($this->never())->method('getRootAliases');

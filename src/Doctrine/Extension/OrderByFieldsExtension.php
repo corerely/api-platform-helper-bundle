@@ -8,7 +8,7 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\ContextAwareQueryCollectionEx
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use Doctrine\ORM\QueryBuilder;
 
-final class OrderByDefaultFieldsExtension implements ContextAwareQueryCollectionExtensionInterface
+final class OrderByFieldsExtension implements ContextAwareQueryCollectionExtensionInterface
 {
 
     /**
