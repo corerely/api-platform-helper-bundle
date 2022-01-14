@@ -23,7 +23,7 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.0",
-        "api-platform/core": "^2.5",
+        "api-platform/core": "^2.6",
         "symfony/http-kernel": "^5.3 || ^6.0",
         "doctrine/orm": "^2.7"
     },
