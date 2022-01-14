@@ -1,0 +1,20 @@
+framework:
+    secret: secrect_test
+    test: true
+    router:
+        utf8: true
+
+doctrine:
+    dbal:
+        url: sqlite:///%kernel.project_dir%/../var/test.sqlite
+
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        auto_mapping: true
+        mappings:
+            App:
+                is_bundle: false
+                dir: '%kernel.project_dir%/Fixtures/Entity'
+                prefix: 'Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity'
+                alias: App

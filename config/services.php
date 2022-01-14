@@ -9,6 +9,5 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services = $containerConfigurator->services();
 
     $services->set(PermanentFilterExtension::class)
-        ->args([tagged_locator('corerely.api_platform_helper.permanent_filter')])
-    ;
+        ->args([tagged_locator('corerely.api_platform_helper.permanent_filter')]);
 };
