@@ -4,35 +4,18 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
+use Corerely\ApiPlatformHelperBundle\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\TextSearchFilter;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Doctrine\Persistence\ObjectRepository;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\Test\Factories;
-use Zenstruck\Foundry\Test\ResetDatabase;
 
-class TextSearchFilterTest extends KernelTestCase
+class TextSearchFilterTest extends AbstractDoctrineExtensionTest
 {
-    use Factories, ResetDatabase;
-
-    private Registry $managerRegistry;
-    private ObjectRepository $repository;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-
-        $this->managerRegistry = self::getContainer()->get('doctrine');
-        $this->repository = $this->managerRegistry->getManagerForClass(Dummy::class)->getRepository(Dummy::class);
-    }
-
     public function testFilterByProperty(): void
     {
         [$dummyExpectToFound] = $this->fixtures();

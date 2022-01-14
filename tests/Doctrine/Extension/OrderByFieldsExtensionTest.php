@@ -4,12 +4,13 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
+use Corerely\ApiPlatformHelperBundle\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
+use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
-use PHPUnit\Framework\TestCase;
 
-class OrderByFieldsExtensionTest extends TestCase
+class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
 {
 
     /**
@@ -17,13 +18,22 @@ class OrderByFieldsExtensionTest extends TestCase
      */
     public function testApplyToCollectionWithSupportedField(string $order): void
     {
-        $ext = new OrderByFieldsExtension('order', ['createdAt']);
+        $ext = new OrderByFieldsExtension('order', ['name']);
 
-        $mockedQB = $this->createMock(QueryBuilder::class);
-        $mockedQB->expects($this->once())->method('getRootAliases')->willReturn(['o']);
-        $mockedQB->expects($this->once())->method('orderBy')->with('o.createdAt', strtoupper($order));
+        $d1 = DummyFactory::createOne(['name' => 'aName'])->object();
+        $d2 = DummyFactory::createOne(['name' => 'dName'])->object();
+        $d3 = DummyFactory::createOne(['name' => 'cName'])->object();
+        $d4 = DummyFactory::createOne(['name' => 'bName'])->object();
 
-        $ext->applyToCollection($mockedQB, new QueryNameGenerator(), Dummy::class, context: ['filters' => ['order' => ['createdAt' => $order]]]);
+        $queryBuilder = $this->repository->createQueryBuilder('o');
+        $ext->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['order' => ['name' => $order]]]);
+
+        $result = $queryBuilder->getQuery()->getResult();
+        $expect = $order === 'asc' ? [$d1, $d4, $d3, $d2] : [$d2, $d3, $d4, $d1];
+
+        foreach ($expect as $key => $item) {
+            $this->assertSame($item, $result[$key]);
+        }
     }
 
     public function ordersDataProvider(): iterable
