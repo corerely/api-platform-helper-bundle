@@ -21,12 +21,16 @@ class CreateResourceTestCommandTest extends KernelTestCase
             'entityClassName' => Dummy::class,
         ]);
 
-        $commandTester->assertCommandIsSuccessful();
-        $this->assertFileExists(__DIR__.'/../Fixtures/DummyTest.php');
+        // Not supported in 5.3
+        if (method_exists($commandTester, 'assertCommandIsSuccessful')) {
+            $commandTester->assertCommandIsSuccessful();
+        }
+
+        $this->assertFileExists(__DIR__ . '/../Fixtures/DummyTest.php');
     }
 
     protected function tearDown(): void
     {
-        @unlink(__DIR__.'/../Fixtures/DummyTest.php');
+        @unlink(__DIR__ . '/../Fixtures/DummyTest.php');
     }
 }
