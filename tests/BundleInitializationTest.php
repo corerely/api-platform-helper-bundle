@@ -13,14 +13,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BundleInitializationTest extends KernelTestCase
 {
-    private ContainerInterface $container;
+    private ContainerInterface $testContainer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         self::bootKernel();
-        $this->container = self::getContainer();
+        $this->testContainer = self::getContainer();
     }
 
     public function testPermanentFilterExtensionService(): void
@@ -50,9 +50,9 @@ class BundleInitializationTest extends KernelTestCase
 
     private function assertServiceConfigured(string $id, string $className): void
     {
-        $this->assertTrue($this->container->has($id));
+        $this->assertTrue($this->testContainer->has($id));
 
-        $service = $this->container->get($id);
+        $service = $this->testContainer->get($id);
         $this->assertInstanceOf($className, $service);
     }
 }
