@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
-use Corerely\ApiPlatformHelperBundle\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Symfony\Component\Routing\RouterInterface;
 

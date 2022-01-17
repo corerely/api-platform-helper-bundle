@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
-use Corerely\ApiPlatformHelperBundle\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\TextSearchFilter;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;

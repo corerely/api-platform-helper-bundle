@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Corerely\ApiPlatformHelperBundle\Doctrine;
+namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\Bundle\DoctrineBundle\Registry;
