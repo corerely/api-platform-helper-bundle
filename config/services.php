@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Corerely\ApiPlatformHelperBundle\Command\CreateResourceTestCommand;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\PermanentFilterExtension;
@@ -14,6 +15,12 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_lo
 
 return static function (ContainerConfigurator $containerConfigurator): void {
     $services = $containerConfigurator->services();
+
+    // Register command
+    $services->set('corerely.api_platform_helper.command.create_resource_test', CreateResourceTestCommand::class)
+        ->tag('console.command')
+        ->arg(0, new Parameter('corerely.api_platform_helper.resources_test_folder'))
+    ;
 
     // Custom ApiPlatform extensions
     $services->set('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class)
