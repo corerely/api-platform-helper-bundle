@@ -16,6 +16,6 @@ final class CorerelyApiPlatformHelperExtension extends Extension
         $loader = new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.php');
 
-        $container->registerForAutoconfiguration(PermanentFilterInterface::class)->addTag('corerely.api_platform_helper.permanent_filter');
+        $container->registerForAutoconfiguration(PermanentFilterInterface::class)->addTag('corerely.api_platform_helper.doctrine.permanent_filter');
     }
 }

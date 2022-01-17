@@ -4,6 +4,10 @@ framework:
     router:
         utf8: true
 
+parameters:
+    corerely.api_platform_helper.order_by_param_name: 'order'
+    corerely.api_platform_helper.order_by_fields: ['createdBy']
+
 doctrine:
     dbal:
         url: sqlite:///%kernel.project_dir%/../var/test.sqlite
