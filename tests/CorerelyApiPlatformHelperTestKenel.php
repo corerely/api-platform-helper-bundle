@@ -36,11 +36,8 @@ class CorerelyApiPlatformHelperTestKenel extends Kernel
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
     {
         $container->setParameter('kernel.project_dir', __DIR__);
-
         // Make all bundle services public for testing
         $container->addCompilerPass(new PublicServicePass('|api_platform_helper.*|'));
-
-        $container->register('corerely.api_platform_helper.test_permanen_filter', MockedPermanentFilter::class);
 
         $loader->load(__DIR__ . '/config/config.yaml');
     }

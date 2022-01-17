@@ -26,13 +26,6 @@ class BundleInitializationTest extends KernelTestCase
     public function testPermanentFilterExtensionService(): void
     {
         $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class);
-        $service = $this->container->get('corerely.api_platform_helper.doctrine.permanent_filter_extension');
-
-        // Test that test permanent filter is injected in locator
-        $rp = (new \ReflectionClass($service))->getProperty('locator');
-        $rp->setAccessible(true);
-        $locator = $rp->getValue($service);
-        $locator->has('corerely.api_platform_helper.test_permanen_filter');
     }
 
     public function testIdentifierCollectionFilterExtensionService(): void
