@@ -28,6 +28,12 @@ class CorerelyApiPlatformHelperExtensionTest extends AbstractExtensionTestCase
         $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.order_by_fields_extension', 'api_platform.doctrine.orm.query_extension.collection');
     }
 
+    public function testLoadApiPlatformFilters(): void
+    {
+        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.text_search_filter', 'api_platform.filter');
+        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.uuid_filter', 'api_platform.filter');
+    }
+
     protected function getContainerExtensions(): array
     {
         return [
