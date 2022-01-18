@@ -8,5 +8,5 @@ use Doctrine\ORM\QueryBuilder;
 
 interface PermanentFilterInterface
 {
-    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = [], array $options = [], array $identifiers = []): void;
+    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = [], array $options = [], array $identifiers = null): void;
 }
