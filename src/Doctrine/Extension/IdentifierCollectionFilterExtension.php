@@ -50,6 +50,15 @@ final class IdentifierCollectionFilterExtension implements ContextAwareQueryColl
         $ids = [];
 
         foreach ($items as $item) {
+            // If filter item is numeric assume this is an array of IDs and not IRIs
+            if (is_numeric($item)) {
+                $this->saveIdentifierFieldName(self::IDENTIFIER_FIELD_ID);
+                $ids[] = (int)$item;
+
+                continue;
+            }
+
+            // Otherwise, assume we have IRI item, try to resolve ID from IRI
             try {
                 $parameters = $this->router->match($item);
                 $identifiers = $parameters['_api_identifiers'] ?? null;
@@ -72,12 +81,21 @@ final class IdentifierCollectionFilterExtension implements ContextAwareQueryColl
                     continue;
                 }
 
-                $this->identifierFieldName = $identifier;
+                $this->saveIdentifierFieldName($identifier);
                 $ids[] = $id;
             } catch (ExceptionInterface) {
             }
         }
 
         return $ids;
+    }
+
+    private function saveIdentifierFieldName(string $identifierFieldName): void
+    {
+        if (isset($this->identifierFieldName) && $identifierFieldName !== $this->identifierFieldName) {
+            throw new \LogicException(sprintf('Identifier field can\'t change once it was set. Tried to changed from "%s" to "%s"', $this->identifierFieldName, $identifierFieldName));
+        }
+
+        $this->identifierFieldName = $identifierFieldName;
     }
 }
