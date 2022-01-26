@@ -130,6 +130,7 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
             $value instanceof Collection => array_map(fn(object $item) => $this->getItemIri($item), $value->toArray()),
             $value instanceof Proxy, is_object($value) && str_contains(ClassUtils::getClass($value), 'App\\Entity\\') => $this->getItemIri($value),
             $value instanceof \Stringable => (string)$value,
+            $value instanceof \BackedEnum => $value->value,
             is_float($value) => $this->preciseZeroFraction($value),
             default => $value
         };
