@@ -12,12 +12,20 @@ class ClientAdapter
     private ?object $user = null;
 
     private bool $isMultipartFormData = false;
+    private bool $asAnonymous = false;
 
     public function __construct(private Client $client, private UserManagerInterface $userManager)
     {
         $this->client->setDefaultOptions([
             'headers' => ['Content-Type' => 'application/ld+json'],
         ]);
+    }
+
+    public function asAnonymous(): static
+    {
+        $this->asAnonymous = true;
+
+        return $this;
     }
 
     public function asMultipartFormData(): static
@@ -74,6 +82,10 @@ class ClientAdapter
 
     public function authenticateClient(object $user = null): Client
     {
+        if ($this->asAnonymous) {
+            return $this->client;
+        }
+
         $user ??= $this->user;
 
         if (null === $user) {
