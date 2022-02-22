@@ -14,18 +14,11 @@ class ClientAdapter
     private bool $isMultipartFormData = false;
     private bool $asAnonymous = false;
 
-    public function __construct(private Client $client, private UserManagerInterface $userManager)
+    public function __construct(private Client $client, private UserManagerInterface $userManager, private ClientAuthenticatorInterface $clientAuthenticator)
     {
         $this->client->setDefaultOptions([
             'headers' => ['Content-Type' => 'application/ld+json'],
         ]);
-    }
-
-    public function asAnonymous(): static
-    {
-        $this->asAnonymous = true;
-
-        return $this;
     }
 
     public function asMultipartFormData(): static
@@ -38,6 +31,13 @@ class ClientAdapter
     public function catchExceptionOff(): static
     {
         $this->client->getKernelBrowser()->catchExceptions(false);
+
+        return $this;
+    }
+
+    public function asAnonymous(): static
+    {
+        $this->asAnonymous = true;
 
         return $this;
     }
@@ -80,13 +80,18 @@ class ClientAdapter
         return $this->authenticateClient()->request('DELETE', $url);
     }
 
-    public function authenticateClient(object $user = null): Client
+    public function authenticateClient(): Client
     {
         if ($this->asAnonymous) {
             return $this->client;
         }
 
-        $user ??= $this->user;
+        return $this->clientAuthenticator->authenticate($this->client, $this->getAuthenticationUser());
+    }
+
+    protected function getAuthenticationUser(): object
+    {
+        $user = $this->user;
 
         if (null === $user) {
             $user = $this->userManager->getRegularUser();
@@ -96,12 +101,10 @@ class ClientAdapter
             $user = $user->object();
         }
 
-        $this->client->getKernelBrowser()->loginUser($user);
-
-        return $this->client;
+        return $user;
     }
 
-    private function createClientOptions(array $data, array $files = null): array
+    protected function createClientOptions(array $data, array $files = null): array
     {
         if ($this->isMultipartFormData) {
             return [
