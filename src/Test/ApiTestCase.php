@@ -81,7 +81,6 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
     {
         $serialized = [
             '@id' => $this->getItemIri($entity),
-            'uuid' => (string)$entity->getUuid(),
         ];
         $serialized += $this->serializeCommonFields($entity);
 
@@ -107,6 +106,10 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
         $serialized = [];
         if ($entity instanceof Proxy) {
             $entity = $entity->object();
+        }
+
+        if (method_exists($entity, 'getUuid')) {
+            $serialized['uuid'] = (string)$entity->getUuid();
         }
 
         if (method_exists($entity, 'getPosition')) {
