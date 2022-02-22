@@ -17,7 +17,7 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
 
     protected function createClientAdapter(): ClientAdapter
     {
-        return new ClientAdapter(self::createClient(), $this->getUserManager());
+        return new ClientAdapter(self::createClient(), $this->getUserManager(), $this->getClientAuthenticator());
     }
 
     protected function addQueryParamsToUrl(string $url, array $params): string
@@ -157,6 +157,11 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
     protected function getManager(): EntityManagerInterface
     {
         return self::getContainer()->get('doctrine')->getManager();
+    }
+
+    protected function getClientAuthenticator(): ClientAuthenticatorInterface
+    {
+        return new DefaultClientAuthenticator();
     }
 
     abstract protected function getUserManager(): UserManagerInterface;
