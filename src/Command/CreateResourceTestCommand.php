@@ -87,7 +87,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %factory%::createMany(5);
 
-        $this->client()->get($this->url);
+        $this->getClient()->get($this->url);
 
         $this->assertResponseIsSuccessful();
     }
@@ -96,7 +96,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->client()->get($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->get($this->url . \'/\' . %var%->getUuid());
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($this->serializeEntity(%var%, [
@@ -112,7 +112,7 @@ class %shortClassName%Test extends AbstractApiTestCase
             \'uuid\' => (string)Uuid::v4(),
             // @TODO Add data
         ];
-        $this->client()->asAdmin()->post($this->url, $data);
+        $this->getClient()->asAdmin()->post($this->url, $data);
 
         $this->assertResponseStatusCodeSame(201);
         %factory%::assert()->count(1);
@@ -127,7 +127,7 @@ class %shortClassName%Test extends AbstractApiTestCase
         $data = [
             // Edit data
         ];
-        $this->client()->asAdmin()->put($this->url . \'/\' . %var%->getUuid(), $data);
+        $this->getClient()->asAdmin()->put($this->url . \'/\' . %var%->getUuid(), $data);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($data);
@@ -139,7 +139,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         %factory%::assert()->count(1);
 
-        $this->client()->asAdmin()->delete($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->asAdmin()->delete($this->url . \'/\' . %var%->getUuid());
 
         $this->assertResponseStatusCodeSame(204);
         %factory%::assert()->empty();
@@ -152,7 +152,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %factory%::createMany(2);
 
-        $this->client()->{$method}($this->url);
+        $this->getClient()->{$method}($this->url);
 
         $this->assertResponseStatusCodeSame(403);
     }
@@ -170,7 +170,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->client()->{$method}($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->{$method}($this->url . \'/\' . %var%->getUuid());
 
         $this->assertResponseStatusCodeSame(403);
     }
