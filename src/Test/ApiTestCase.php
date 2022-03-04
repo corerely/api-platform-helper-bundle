@@ -15,7 +15,15 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
 {
     use ResetDatabase, Factories;
 
+    /**
+     * @deprecated use "getClient" instead
+     */
     protected function createClientAdapter(): ClientAdapter
+    {
+        return $this->getClient();
+    }
+
+    protected function getClient(): ClientAdapter
     {
         return new ClientAdapter(self::createClient(), $this->getUserManager(), $this->getClientAuthenticator());
     }
