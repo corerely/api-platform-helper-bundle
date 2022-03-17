@@ -106,15 +106,16 @@ class %shortClassName%Test extends AbstractApiTestCase
 
     public function testCreate(): void
     {
-        %factory%::assert()->empty();
-
         $data = [
             \'uuid\' => (string)Uuid::v4(),
             // @TODO Add data
         ];
+        
+        %factory%::assert()->empty();
+
         $this->getClient()->asAdmin()->post($this->url, $data);
 
-        $this->assertResponseStatusCodeSame(201);
+        $this->assertResponseIsCreated();
         %factory%::assert()->count(1);
 
         $this->assertJsonContains($data);
@@ -141,7 +142,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->asAdmin()->delete($this->url . \'/\' . %var%->getUuid());
 
-        $this->assertResponseStatusCodeSame(204);
+        $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
     }
 
@@ -154,7 +155,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url);
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseIsForbidden();
     }
 
     public function collectionMethodDataProvider(): iterable
@@ -172,7 +173,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url . \'/\' . %var%->getUuid());
 
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseIsForbidden();
     }
 
     public function itemMethodDataProvider(): iterable
