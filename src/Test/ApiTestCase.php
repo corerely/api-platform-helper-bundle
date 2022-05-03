@@ -97,13 +97,14 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
         }
 
         foreach ($properties as $property) {
-            $getter = match (true) {
-                method_exists($entity, 'get' . ucfirst($property)) => 'get' . ucfirst($property),
-                method_exists($entity, 'is' . ucfirst($property)) => 'is' . ucfirst($property),
+            $value = match (true) {
+                method_exists($entity, 'get' . ucfirst($property)) => $entity->{'get' . ucfirst($property)}(),
+                method_exists($entity, 'is' . ucfirst($property)) => $entity->{'is' . ucfirst($property)}(),
+                (new \ReflectionProperty($entity, $property))->isPublic() => $entity->$property,
                 default => throw new \Exception(sprintf('Could not get property "%s"', $property))
             };
 
-            $serialized[$property] = $this->serializeValue($entity->$getter());
+            $serialized[$property] = $this->serializeValue($value);
         }
 
         return $serialized;
