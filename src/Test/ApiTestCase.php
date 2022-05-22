@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
@@ -14,6 +16,15 @@ use Zenstruck\Foundry\Test\ResetDatabase;
 abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase
 {
     use ResetDatabase, Factories;
+
+    private PropertyAccessorInterface $propertyAccess;
+
+    public function __construct(PropertyAccessorInterface $propertyAccess = null)
+    {
+        $this->propertyAccess = $propertyAccess ?? PropertyAccess::createPropertyAccessor();
+
+        parent::__construct();
+    }
 
     /**
      * @deprecated use "getClient" instead
@@ -96,15 +107,26 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
             $entity = $entity->object();
         }
 
-        foreach ($properties as $property) {
-            $value = match (true) {
-                method_exists($entity, 'get' . ucfirst($property)) => $entity->{'get' . ucfirst($property)}(),
-                method_exists($entity, 'is' . ucfirst($property)) => $entity->{'is' . ucfirst($property)}(),
-                (new \ReflectionProperty($entity, $property))->isPublic() => $entity->$property,
-                default => throw new \Exception(sprintf('Could not get property "%s"', $property))
-            };
+        foreach ($properties as $key => $property) {
+            // If property is array, then need to serialize embedded entity
+            if (is_array($property)) {
+                $embeddedProperties = $property;
+                $property = $key;
 
-            $serialized[$property] = $this->serializeValue($value);
+                $value = $this->propertyAccess->getValue($entity, $property);
+
+                if (is_iterable($value)) {
+                    $serialized[$property] = array_map(fn(object $item) => $this->serializeEntity($item, $embeddedProperties), [...$value]);
+                } elseif (null !== $value) {
+                    $serialized[$property] = $this->serializeEntity($value, $embeddedProperties);
+                }
+
+                continue;
+            }
+
+            $serialized[$property] = $this->serializeValue(
+                $this->propertyAccess->getValue($entity, $property)
+            );
         }
 
         return $serialized;
