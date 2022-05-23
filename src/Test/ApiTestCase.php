@@ -17,14 +17,7 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
 {
     use ResetDatabase, Factories;
 
-    private PropertyAccessorInterface $propertyAccess;
-
-    public function __construct(PropertyAccessorInterface $propertyAccess = null)
-    {
-        $this->propertyAccess = $propertyAccess ?? PropertyAccess::createPropertyAccessor();
-
-        parent::__construct();
-    }
+    private PropertyAccessorInterface $propertyAccessor;
 
     /**
      * @deprecated use "getClient" instead
@@ -107,13 +100,15 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
             $entity = $entity->object();
         }
 
+        $propertyAccessor = $this->getPropertyAccessor();
+
         foreach ($properties as $key => $property) {
             // If property is array, then need to serialize embedded entity
             if (is_array($property)) {
                 $embeddedProperties = $property;
                 $property = $key;
 
-                $value = $this->propertyAccess->getValue($entity, $property);
+                $value = $propertyAccessor->getValue($entity, $property);
 
                 if (is_iterable($value)) {
                     $serialized[$property] = array_map(fn(object $item) => $this->serializeEntity($item, $embeddedProperties), [...$value]);
@@ -125,7 +120,7 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
             }
 
             $serialized[$property] = $this->serializeValue(
-                $this->propertyAccess->getValue($entity, $property)
+                $propertyAccessor->getValue($entity, $property)
             );
         }
 
@@ -197,6 +192,11 @@ abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\
     protected function getClientAuthenticator(): ClientAuthenticatorInterface
     {
         return new DefaultClientAuthenticator();
+    }
+
+    protected function getPropertyAccessor(): PropertyAccessorInterface
+    {
+        return $this->propertyAccessor ??= PropertyAccess::createPropertyAccessor();
     }
 
     abstract protected function getUserManager(): UserManagerInterface;
