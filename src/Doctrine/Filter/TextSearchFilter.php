@@ -15,17 +15,14 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 final class TextSearchFilter extends AbstractContextAwareFilter
 {
 
-    private string $parameterName;
-
-    public function __construct(ManagerRegistry $managerRegistry, ?RequestStack $requestStack = null, LoggerInterface $logger = null, array $properties = null, NameConverterInterface $nameConverter = null, string $parameterName = 'q')
+    public function __construct(ManagerRegistry $managerRegistry, ?RequestStack $requestStack = null, LoggerInterface $logger = null, array $properties = null, NameConverterInterface $nameConverter = null, private string $parameterName = 'q', private bool $caseSensitive = true)
     {
         parent::__construct($managerRegistry, $requestStack, $logger, $properties, $nameConverter);
-
-        $this->parameterName = $parameterName;
     }
 
     protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null): void
     {
+
         // If filter property is not a "q"
         if ($this->parameterName !== $property) {
             return;
@@ -59,7 +56,7 @@ final class TextSearchFilter extends AbstractContextAwareFilter
             if ($metadata->hasField($field)) {
                 $orX->add(
                     $queryBuilder->expr()->like(
-                        sprintf('%s.%s', $alias, $field),
+                        $this->wrapCase(sprintf('%s.%s', $alias, $field)),
                         (string)$queryBuilder->expr()->concat("'%'", ':' . $parameterName, "'%'")
                     )
                 );
@@ -88,5 +85,14 @@ final class TextSearchFilter extends AbstractContextAwareFilter
                 ],
             ],
         ];
+    }
+
+    private function wrapCase(string $alias): string
+    {
+        if ($this->caseSensitive) {
+            return $alias;
+        }
+
+        return sprintf('LOWER(%s)', $alias);
     }
 }
