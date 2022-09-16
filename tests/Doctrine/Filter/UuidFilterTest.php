@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGenerator;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
