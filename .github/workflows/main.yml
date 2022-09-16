@@ -16,7 +16,10 @@ jobs:
             matrix:
                 operating-system: [ ubuntu-latest ]
                 php: [ '8.0', '8.1' ]
-                symfony: [ '5.3.*', '5.4.*', '6.0.*', '6.1.*' ]
+                symfony: [ '5.4.*', '6.0.*', '6.1.*' ]
+                exclude:
+                    - php: '8.0'
+                      symfony: '6.1.*'
 
         steps:
             - uses: actions/checkout@master
