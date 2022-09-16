@@ -3,6 +3,7 @@ framework:
     test: true
     router:
         utf8: true
+    http_method_override: false
 
 parameters:
     corerely.api_platform_helper.order_by_param_name: 'order'

@@ -43,15 +43,15 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     $services->set('corerely.api_platform_helper.doctrine.text_search_filter', TextSearchFilter::class)
         ->tag('api_platform.filter')
         ->arg(0, new Reference('doctrine'))
-        ->arg(1, null)
-        ->arg(2, service('logger')->nullOnInvalid())
+        ->arg(1, service('logger')->nullOnInvalid())
+        ->arg(2, null)
     ;
 
     $services->set('corerely.api_platform_helper.doctrine.uuid_filter', UuidFilter::class)
         ->tag('api_platform.filter')
         ->arg(0, new Reference('router'))
         ->arg(1, new Reference('doctrine'))
-        ->arg(2, null)
-        ->arg(3, service('logger')->nullOnInvalid())
+        ->arg(2, service('logger')->nullOnInvalid())
+        ->arg(3, null)
     ;
 };

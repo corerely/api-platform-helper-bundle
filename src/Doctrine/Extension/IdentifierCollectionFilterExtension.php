@@ -3,14 +3,15 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\ContextAwareQueryCollectionExtensionInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-final class IdentifierCollectionFilterExtension implements ContextAwareQueryCollectionExtensionInterface
+final class IdentifierCollectionFilterExtension implements QueryCollectionExtensionInterface
 {
     use FilterByIdsCommonTrait;
 
@@ -22,11 +23,11 @@ final class IdentifierCollectionFilterExtension implements ContextAwareQueryColl
 
     private string $identifierFieldName;
 
-    public function __construct(private RouterInterface $router)
+    public function __construct(private readonly RouterInterface $router)
     {
     }
 
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         $value = $this->normalizeValue($context['filters']['id'] ?? null);
         if (null === $value) {

@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Command;
 
-use ApiPlatform\Core\Util\Inflector;
+use ApiPlatform\Util\Inflector;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+#[AsCommand(
+    name: 'corerely:create-resource-test',
+    description: 'Create a API Platform Resource test case',
+)]
 class CreateResourceTestCommand extends Command
 {
-    // @codingStandardsIgnoreStart
-    protected static $defaultName = 'corerely:create-resource-test';
-    protected static $defaultDescription = 'Create a API Platform Resource test case';
-
-    // @codingStandardsIgnoreEnd
 
     public function __construct(private string $targetDir)
     {

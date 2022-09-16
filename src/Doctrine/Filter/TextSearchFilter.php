@@ -3,24 +3,24 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Filter;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractContextAwareFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
-final class TextSearchFilter extends AbstractContextAwareFilter
+final class TextSearchFilter extends AbstractFilter
 {
 
-    public function __construct(ManagerRegistry $managerRegistry, ?RequestStack $requestStack = null, LoggerInterface $logger = null, array $properties = null, NameConverterInterface $nameConverter = null, private string $parameterName = 'q', private bool $caseSensitive = true)
+    public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null, private readonly string $parameterName = 'q', private readonly bool $caseSensitive = true)
     {
-        parent::__construct($managerRegistry, $requestStack, $logger, $properties, $nameConverter);
+        parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
 
-    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null): void
+    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
 
         // If filter property is not a "q"
@@ -29,7 +29,7 @@ final class TextSearchFilter extends AbstractContextAwareFilter
         }
 
         // Do nothing if search is empty
-        $value = trim($value);
+        $value = trim((string) $value);
         if (empty($value)) {
             return;
         }

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Common;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Uid\Uuid;
 

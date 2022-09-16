@@ -3,26 +3,27 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Filter;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\AbstractContextAwareFilter;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\PropertyHelperTrait;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
+use ApiPlatform\Doctrine\Orm\PropertyHelperTrait;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
-final class UuidFilter extends AbstractContextAwareFilter
+final class UuidFilter extends AbstractFilter
 {
     use PropertyHelperTrait;
     use FilterByIdsCommonTrait;
 
-    public function __construct(private RouterInterface $router, ManagerRegistry $managerRegistry, ?RequestStack $requestStack = null, LoggerInterface $logger = null, array $properties = null, NameConverterInterface $nameConverter = null)
+    public function __construct(private readonly RouterInterface $router, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
     {
-        parent::__construct($managerRegistry, $requestStack, $logger, $properties, $nameConverter);
+        parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
 
     public function getDescription(string $resourceClass): array
@@ -47,7 +48,7 @@ final class UuidFilter extends AbstractContextAwareFilter
         return $description;
     }
 
-    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null): void
+    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         if (null === $value ||
             !$this->isPropertyEnabled($property, $resourceClass) ||
@@ -70,7 +71,7 @@ final class UuidFilter extends AbstractContextAwareFilter
         $field = $property;
         $associations = [];
         if ($this->isPropertyNested($property, $resourceClass)) {
-            [$alias, $field, $associations] = $this->addJoinsForNestedProperty($property, $alias, $queryBuilder, $queryNameGenerator, $resourceClass);
+            [$alias, $field, $associations] = $this->addJoinsForNestedProperty($property, $alias, $queryBuilder, $queryNameGenerator, $resourceClass, Join::INNER_JOIN);
         }
 
         $metadata = $this->getNestedMetadata($resourceClass, $associations);
@@ -78,7 +79,7 @@ final class UuidFilter extends AbstractContextAwareFilter
             return;
         }
 
-        $uuids = array_map([$this, 'getUuidFromIri'], $values);
+        $uuids = array_map($this->getUuidFromIri(...), $values);
         $uuids = $this->uuidsToBinary($uuids);
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);

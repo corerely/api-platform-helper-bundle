@@ -3,29 +3,30 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\ContextAwareQueryCollectionExtensionInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\QueryItemExtensionInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
+use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Annotation\ApiPermanentFilter;
 use Corerely\ApiPlatformHelperBundle\Doctrine\PermanentFilter\PermanentFilterInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-final class PermanentFilterExtension implements ContextAwareQueryCollectionExtensionInterface, QueryItemExtensionInterface
+final class PermanentFilterExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
 
-    public function __construct(private ServiceLocator $locator)
+    public function __construct(private readonly ServiceLocator $locator)
     {
     }
 
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
-        $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operationName, $context, null);
+        $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operation, $context, null);
     }
 
-    public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, string $operationName = null, array $context = []): void
+    public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, Operation $operation = null, array $context = []): void
     {
-        $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operationName, $context, $identifiers);
+        $this->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operation, $context, $identifiers);
     }
 
     private function getFilter(string $className): PermanentFilterInterface
