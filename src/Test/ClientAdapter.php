@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Test;
 
-use ApiPlatform\Core\Bridge\Symfony\Bundle\Test\Client;
+use ApiPlatform\Symfony\Bundle\Test\Client;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Zenstruck\Foundry\Proxy;
 

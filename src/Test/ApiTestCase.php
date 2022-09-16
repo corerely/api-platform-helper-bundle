@@ -13,7 +13,7 @@ use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
-abstract class ApiTestCase extends \ApiPlatform\Core\Bridge\Symfony\Bundle\Test\ApiTestCase
+abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 {
     use ResetDatabase, Factories;
 

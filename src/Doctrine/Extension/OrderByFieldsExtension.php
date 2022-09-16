@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 
-use ApiPlatform\Core\Bridge\Doctrine\Common\Filter\OrderFilterInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Extension\ContextAwareQueryCollectionExtensionInterface;
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Doctrine\Common\Filter\OrderFilterInterface;
+use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\QueryBuilder;
 
-final class OrderByFieldsExtension implements ContextAwareQueryCollectionExtensionInterface
+final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
 {
 
     /**
@@ -19,7 +20,7 @@ final class OrderByFieldsExtension implements ContextAwareQueryCollectionExtensi
     {
     }
 
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         $filterValue = $context['filters'][$this->paramName] ?? null;
         $intersect = array_values(
