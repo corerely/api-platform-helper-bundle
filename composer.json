@@ -23,22 +23,22 @@
     "prefer-stable": true,
     "require": {
         "php": "^8.0",
-        "api-platform/core": "^2.6 || ^3.0",
-        "symfony/http-kernel": "^5.4 || ^6.0",
+        "api-platform/core": "^3.0",
+        "symfony/http-kernel": "^6.0",
         "doctrine/orm": "^2.7"
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^2.5",
         "slevomat/coding-standard": "^7.0",
         "phpunit/phpunit": "^9.5",
-        "symfony/framework-bundle": "^5.4 || ^6.0",
-        "symfony/phpunit-bridge": "^5.4 || ^6.0",
-        "symfony/property-access": "^5.4 || ^6.0",
-        "symfony/yaml": "^5.4 || ^6.0",
-        "symfony/uid": "^5.4 || ^6.0",
+        "symfony/framework-bundle": "^6.0",
+        "symfony/phpunit-bridge": "^6.0",
+        "symfony/property-access": "^6.0",
+        "symfony/yaml": "^6.0",
+        "symfony/uid": "^6.0",
         "zenstruck/foundry": "^1.16",
         "matthiasnoback/symfony-dependency-injection-test": "^4.3",
-        "symfony/http-client": "^5.4 || ^6.0"
+        "symfony/http-client": "^6.0"
     },
     "config": {
         "allow-plugins": true
