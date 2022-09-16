@@ -21,7 +21,7 @@ final class UuidFilter extends AbstractFilter
     use PropertyHelperTrait;
     use FilterByIdsCommonTrait;
 
-    public function __construct(private RouterInterface $router, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
+    public function __construct(private readonly RouterInterface $router, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
     {
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
@@ -79,7 +79,7 @@ final class UuidFilter extends AbstractFilter
             return;
         }
 
-        $uuids = array_map([$this, 'getUuidFromIri'], $values);
+        $uuids = array_map($this->getUuidFromIri(...), $values);
         $uuids = $this->uuidsToBinary($uuids);
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);

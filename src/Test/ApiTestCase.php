@@ -161,7 +161,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
             $value instanceof \Stringable => (string)$value,
             $value instanceof \BackedEnum => $value->value,
             is_float($value) => $this->preciseZeroFraction($value),
-            is_array($value) => array_map([$this, 'serializeValue'], $value),
+            is_array($value) => array_map($this->serializeValue(...), $value),
             default => $value
         };
     }

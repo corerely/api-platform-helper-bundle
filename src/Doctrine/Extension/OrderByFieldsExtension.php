@@ -16,7 +16,7 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
      * @var string $paramName ['order' => ['createdAt' => 'desc']]
      * @var array $fields ['createdAt', 'updatedAt']
      */
-    public function __construct(private string $paramName, private array $fields)
+    public function __construct(private readonly string $paramName, private readonly array $fields)
     {
     }
 

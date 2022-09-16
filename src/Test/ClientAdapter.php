@@ -14,7 +14,7 @@ class ClientAdapter
     private bool $isMultipartFormData = false;
     private bool $asAnonymous = false;
 
-    public function __construct(private Client $client, private UserManagerInterface $userManager, private ClientAuthenticatorInterface $clientAuthenticator)
+    public function __construct(private readonly Client $client, private readonly UserManagerInterface $userManager, private readonly ClientAuthenticatorInterface $clientAuthenticator)
     {
         $this->client->setDefaultOptions([
             'headers' => ['Content-Type' => 'application/ld+json'],
