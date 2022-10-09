@@ -15,7 +15,7 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 final class TextSearchFilter extends AbstractFilter
 {
 
-    public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null, private readonly string $parameterName = 'q', private readonly bool $caseSensitive = true)
+    public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null, private readonly string $parameterName = 'q', private readonly bool $caseSensitive = false)
     {
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
@@ -57,7 +57,7 @@ final class TextSearchFilter extends AbstractFilter
                 $orX->add(
                     $queryBuilder->expr()->like(
                         $this->wrapCase(sprintf('%s.%s', $alias, $field)),
-                        (string)$queryBuilder->expr()->concat("'%'", ':' . $parameterName, "'%'")
+                        (string)$queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'")
                     )
                 );
             }
@@ -65,7 +65,7 @@ final class TextSearchFilter extends AbstractFilter
 
         $queryBuilder
             ->andWhere($orX)
-            ->setParameter($parameterName, $value);
+            ->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value));
     }
 
     public function getDescription(string $resourceClass): array
@@ -80,7 +80,7 @@ final class TextSearchFilter extends AbstractFilter
                 'type' => 'string',
                 'required' => false,
                 'swagger' => [
-                    'description' => 'Selects entities where each search term is ' .
+                    'description' => 'Selects entities where each search term is '.
                         'found somewhere in at least one of the specified properties',
                 ],
             ],
