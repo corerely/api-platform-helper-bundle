@@ -38,7 +38,7 @@ final class PermanentFilterExtension implements QueryCollectionExtensionInterfac
         return $this->locator->get($className);
     }
 
-    private function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName, array $context, ?array $identifiers): void
+    private function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation, array $context, ?array $identifiers): void
     {
         $attributes = (new \ReflectionClass($resourceClass))->getAttributes(ApiPermanentFilter::class);
 
@@ -47,7 +47,7 @@ final class PermanentFilterExtension implements QueryCollectionExtensionInterfac
             $attributeInstance = $attribute->newInstance();
 
             $filter = $this->getFilter($attributeInstance->filterClassName);
-            $filter->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operationName, $context, $attributeInstance->options, $identifiers);
+            $filter->apply($queryBuilder, $queryNameGenerator, $resourceClass, $operation, $context, $attributeInstance->options, $identifiers);
         }
     }
 }
