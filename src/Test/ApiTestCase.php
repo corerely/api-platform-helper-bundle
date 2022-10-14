@@ -60,7 +60,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
             $entity = $entity->object();
         }
 
-        return self::getContainer()->get('api_platform.iri_converter')->getIriFromItem($entity);
+        return self::getContainer()->get('api_platform.iri_converter')->getIriFromResource($entity);
     }
 
     // Assert helpers
