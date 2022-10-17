@@ -5,6 +5,7 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Exception\InvalidArgumentException;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
 use Doctrine\ORM\QueryBuilder;
@@ -18,8 +19,8 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
     /**
      * Identifier possible fields
      */
-    private const IDENTIFIER_FIELD_ID = 'id';
-    private const IDENTIFIER_FIELD_UUID = 'uuid';
+    /*private const IDENTIFIER_FIELD_ID = 'id';
+    private const IDENTIFIER_FIELD_UUID = 'uuid';*/
 
     private string $identifierFieldName;
 
@@ -34,16 +35,43 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             return;
         }
 
-        $ids = $this->getIdsAndDetectIdentifierField($value, $resourceClass);
+        $ids = array_map($this->getIdFromValue(...), $value);
+
+//        $ids = $this->getIdsAndDetectIdentifierField($value, $resourceClass);
         if (empty($ids)) {
             return;
         }
+//        dd($ids);
 
-        if (self::IDENTIFIER_FIELD_UUID === $this->identifierFieldName) {
+        /*if (self::IDENTIFIER_FIELD_UUID === $this->identifierFieldName) {
             $ids = $this->uuidsToBinary($ids);
+        }*/
+
+        $this->andWhere($queryBuilder, $queryNameGenerator, $queryBuilder->getRootAliases()[0], 'id', $ids);
+    }
+
+    /**
+     * Gets the ID from an IRI or a raw ID.
+     */
+    protected function getIdFromValue(string $value): mixed
+    {
+        // Temp workaround
+        $parts = explode('/', trim($value, '/'));
+        $id = (int)($parts[2] ?? null);
+
+        return $id ?: null;
+
+        // @TODO make this work
+        try {
+            $iriConverter = $this->getIriConverter();
+            $item = $iriConverter->getResourceFromIri($value, ['fetch_data' => false]);
+
+            return $item->getId();
+        } catch (InvalidArgumentException) {
+            // Do nothing, return the raw value
         }
 
-        $this->andWhere($queryBuilder, $queryNameGenerator, $queryBuilder->getRootAliases()[0], $this->identifierFieldName, $ids);
+        return $value;
     }
 
     private function getIdsAndDetectIdentifierField(array $items, string $resourceClass): array
@@ -62,6 +90,8 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             // Otherwise, assume we have IRI item, try to resolve ID from IRI
             try {
                 $parameters = $this->router->match($item);
+
+                dd($parameters);
                 $identifiers = $parameters['_api_identifiers'] ?? null;
 
                 if (!is_array($identifiers)) {
