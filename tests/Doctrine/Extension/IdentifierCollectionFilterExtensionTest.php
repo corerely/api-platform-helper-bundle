@@ -11,11 +11,7 @@ use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 
 class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionTest
 {
-    private function createFilterExtension(): IdentifierCollectionFilterExtension
-    {
-        return new IdentifierCollectionFilterExtension(self::getContainer()->get('api_platform.symfony.iri_converter'));
-    }
-
+    
     public function testFilterWithIriId(): void
     {
         DummyFactory::createMany(3);
