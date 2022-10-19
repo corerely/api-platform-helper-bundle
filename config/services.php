@@ -29,7 +29,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->tag('api_platform.doctrine.orm.query_extension.item');
 
     $services->set('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', IdentifierCollectionFilterExtension::class)
-        ->arg(0, new Reference('router'))
+        ->arg(0, new Reference('api_platform.symfony.iri_converter'))
         ->tag('api_platform.doctrine.orm.query_extension.collection')
     ;
 
