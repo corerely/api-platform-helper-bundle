@@ -30,7 +30,7 @@ class CorerelyApiPlatformHelperTestKenel extends Kernel
 
     public function getCacheDir(): string
     {
-        return __DIR__ . '/../var/cache' . spl_object_hash($this);
+        return __DIR__.'/../var/cache'.spl_object_hash($this);
     }
 
     protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader): void
@@ -39,6 +39,6 @@ class CorerelyApiPlatformHelperTestKenel extends Kernel
         // Make all bundle services public for testing
         $container->addCompilerPass(new PublicServicePass('|api_platform_helper.*|'));
 
-        $loader->load(__DIR__ . '/config/config.yaml');
+        $loader->load(__DIR__.'/config/config.yaml');
     }
 }

@@ -29,7 +29,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-bundle": "^2.5",
-        "slevomat/coding-standard": "^7.0",
+        "slevomat/coding-standard": "^8.0",
         "phpunit/phpunit": "^9.5",
         "symfony/framework-bundle": "^6.1",
         "symfony/phpunit-bridge": "^6.1",
