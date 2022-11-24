@@ -111,7 +111,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->get($this->url . \'/\' . %var%->%idGetter%);
+        $this->getClient()->get($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($this->serializeEntity(%var%, [
@@ -143,7 +143,7 @@ class %shortClassName%Test extends AbstractApiTestCase
         $data = [
             // Edit data
         ];
-        $this->getClient()->asAdmin()->put($this->url . \'/\' . %var%->%idGetter%, $data);
+        $this->getClient()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($data);
@@ -155,7 +155,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         %factory%::assert()->count(1);
 
-        $this->getClient()->asAdmin()->delete($this->url . \'/\' . %var%->%idGetter%);
+        $this->getClient()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
@@ -186,7 +186,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->{$method}($this->url . \'/\' . %var%->%idGetter%);
+        $this->getClient()->{$method}($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsForbidden();
     }
