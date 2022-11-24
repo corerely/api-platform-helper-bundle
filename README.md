@@ -17,7 +17,6 @@ Add basic params to `services.yaml`
 parameters:
     corerely.api_platform_helper.order_by_param_name: 'order'
     corerely.api_platform_helper.order_by_fields: ['createdAt']
-    corerely.api_platform_helper.resources_test_folder: '%kernel.project_dir%/../Resource'
 ```
 
 ## Filters
@@ -52,13 +51,13 @@ declare(strict_types=1);
 
 namespace App\Filter;
 
-use ApiPlatform\Core\Bridge\Doctrine\Orm\Util\QueryNameGeneratorInterface;
-use Corerely\ApiPlatformHelperBundle\Doctrine\PermanentFilter\PermanentFilterInterface;
+use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\QueryBuilder;
 
 class OwnerPermanentFilter implements PermanentFilterInterface
 {
-    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null, array $context = [], array $options = [], array $identifiers = null): void
+    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = [], array $options = [], array $identifiers = null): void
     {
         $rootAlis = $queryBuilder->getRootAliases()[0];
         $param = $queryNameGenerator->generateParameterName('owner');
