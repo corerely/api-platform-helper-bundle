@@ -47,7 +47,7 @@ class CreateResourceTestCommand extends Command
             '',
         ]);
         $entityClassName = $this->normalizeEntityName($input->getArgument('entityClassName'));
-        $targetFolder = trim($input->getArgument('targetDir'), '/');
+        $targetDir = trim($input->getArgument('targetDir'), '/');
 
         if (!class_exists($entityClassName)) {
             throw new \Exception(sprintf('class %s does not exist', $entityClassName));
@@ -57,22 +57,27 @@ class CreateResourceTestCommand extends Command
         $message = sprintf('Generated test for "%s"', $entityClassName);
         $io->success($message);
 
-        $this->generateTest($entityClassName, $targetFolder);
+        $this->generateTest($entityClassName, $targetDir);
 
         return Command::SUCCESS;
     }
 
-    private function generateTest(string $entityClassName, string $targetFolder): void
+    private function generateTest(string $entityClassName, string $targetDir): void
     {
-        $shortClassName = (new \ReflectionClass($entityClassName))->getShortName();
+        $reflectionClass = new \ReflectionClass($entityClassName);
+        $shortClassName = $reflectionClass->getShortName();
+
         $var = '$'.lcfirst($shortClassName);
         $factory = $shortClassName.'Factory';
         $url = Inflector::tableize(Inflector::pluralize($shortClassName));
-        $namespace = ucfirst(str_replace('/', '\\', $targetFolder));
+
+        $namespace = str_replace('App\\', 'App\\Tests\\', $reflectionClass->getNamespaceName());
+        $namespace = str_replace('\\Entity', '\\Resource', $namespace);
+
         $hasUuid = property_exists($entityClassName, 'uuid');
         $idGetter = $hasUuid ? 'getUuid()' : 'getId()';
 
-        $file = fopen(sprintf('%s/tests/%s/%sTest.php', $this->projectDir, $targetFolder, $shortClassName), 'w');
+        $file = fopen(sprintf('%s/tests/%s/%sTest.php', $this->projectDir, $targetDir, $shortClassName), 'w');
         $content = '
 <?php
 declare(strict_types=1);
@@ -81,7 +86,7 @@ namespace App\Tests\%namespace%;
 
 use %entityClassName%;
 use App\Factory\%factory%;
-use App\Tests\AbstractApiTestCase;'.$hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;'.PHP_EOL) : ''.'
+use App\Tests\AbstractApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
 class %shortClassName%Test extends ApiTestCase
 {

@@ -8,7 +8,6 @@ framework:
 parameters:
     corerely.api_platform_helper.order_by_param_name: 'order'
     corerely.api_platform_helper.order_by_fields: ['createdAt']
-    corerely.api_platform_helper.resources_test_folder: '%kernel.project_dir%/Fixtures'
 
 doctrine:
     dbal:
