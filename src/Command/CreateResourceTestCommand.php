@@ -82,7 +82,7 @@ class CreateResourceTestCommand extends Command
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\%namespace%;
+namespace %namespace%;
 
 use %entityClassName%;
 use App\Factory\%factory%;
