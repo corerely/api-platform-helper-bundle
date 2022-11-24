@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests;
 
+use Corerely\ApiPlatformHelperBundle\Command\CreateResourceTestCommand;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\PermanentFilterExtension;
@@ -13,14 +14,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BundleInitializationTest extends KernelTestCase
 {
-    private ContainerInterface $testContainer;
+    private static ContainerInterface $testContainer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         self::bootKernel();
-        $this->testContainer = self::getContainer();
+        self::$testContainer = self::getContainer();
     }
 
     public function testPermanentFilterExtensionService(): void
@@ -48,11 +49,16 @@ class BundleInitializationTest extends KernelTestCase
         self::assertServiceConfigured('corerely.api_platform_helper.doctrine.uuid_filter', UuidFilter::class);
     }
 
-    private function assertServiceConfigured(string $id, string $className): void
+    public function testCreateResourceTestCommandService(): void
     {
-        self::assertTrue($this->testContainer->has($id));
+        self::assertServiceConfigured('corerely.api_platform_helper.command.create_resource_test', CreateResourceTestCommand::class);
+    }
 
-        $service = $this->testContainer->get($id);
+    private static function assertServiceConfigured(string $id, string $className): void
+    {
+        self::assertTrue(self::$testContainer->has($id));
+
+        $service = self::$testContainer->get($id);
         self::assertInstanceOf($className, $service);
     }
 }
