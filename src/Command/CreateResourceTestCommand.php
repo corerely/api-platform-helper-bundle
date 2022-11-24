@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CreateResourceTestCommand extends Command
 {
 
-    public function __construct(private string $targetDir)
+    public function __construct(private string $projectDir)
     {
         parent::__construct();
     }
@@ -26,13 +26,14 @@ class CreateResourceTestCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('entityClassName', InputArgument::REQUIRED, 'ApiPlatform Resource/Entity class name to test');
+            ->addArgument('entityClassName', InputArgument::REQUIRED, 'ApiPlatform Resource/Entity class name to test')
+            ->addArgument('targetDir', InputArgument::OPTIONAL, 'Target folder in tests folder', 'Resource');
     }
 
     protected function normalizeEntityName(string $entityClassName): string
     {
         if (!str_contains($entityClassName, '\\')) {
-            return 'App\\Entity\\' . $entityClassName;
+            return 'App\\Entity\\'.$entityClassName;
         }
 
         return $entityClassName;
@@ -46,6 +47,8 @@ class CreateResourceTestCommand extends Command
             '',
         ]);
         $entityClassName = $this->normalizeEntityName($input->getArgument('entityClassName'));
+        $targetFolder = trim($input->getArgument('targetDir'), '/');
+
         if (!class_exists($entityClassName)) {
             throw new \Exception(sprintf('class %s does not exist', $entityClassName));
         }
@@ -54,34 +57,35 @@ class CreateResourceTestCommand extends Command
         $message = sprintf('Generated test for "%s"', $entityClassName);
         $io->success($message);
 
-        $this->generateTest($entityClassName);
+        $this->generateTest($entityClassName, $targetFolder);
 
         return Command::SUCCESS;
     }
 
-    private function generateTest(string $entityClassName): void
+    private function generateTest(string $entityClassName, string $targetFolder): void
     {
         $shortClassName = (new \ReflectionClass($entityClassName))->getShortName();
-        $var = '$' . lcfirst($shortClassName);
-        $factory = $shortClassName . 'Factory';
-        $pluralize = strtolower(Inflector::pluralize($shortClassName));
-        $folder = strrev(explode('/', strrev($this->targetDir))[0]);
+        $var = '$'.lcfirst($shortClassName);
+        $factory = $shortClassName.'Factory';
+        $url = Inflector::tableize(Inflector::pluralize($shortClassName));
+        $namespace = ucfirst(str_replace('/', '\\', $targetFolder));
+        $hasUuid = property_exists($entityClassName, 'uuid');
+        $idGetter = $hasUuid ? 'getUuid()' : 'getId()';
 
-        $file = fopen(sprintf('%s/%sTest.php', $this->targetDir, $shortClassName), 'w');
+        $file = fopen(sprintf('%s/tests/%s/%sTest.php', $this->projectDir, $targetFolder, $shortClassName), 'w');
         $content = '
 <?php
 declare(strict_types=1);
 
-namespace App\Tests\%folder%;
+namespace App\Tests\%namespace%;
 
 use %entityClassName%;
 use App\Factory\%factory%;
-use App\Tests\AbstractApiTestCase;
-use Symfony\Component\Uid\Uuid;
+use App\Tests\AbstractApiTestCase;'.$hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;'.PHP_EOL) : ''.'
 
-class %shortClassName%Test extends AbstractApiTestCase
+class %shortClassName%Test extends ApiTestCase
 {
-    private string $url = \'/api/%pluralize%\';
+    private string $url = \'/api/%url%\';
 
     public function testGetCollection(): void
     {
@@ -96,7 +100,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->get($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->get($this->url . \'/\' . %var%->%idGetter%);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($this->serializeEntity(%var%, [
@@ -128,7 +132,7 @@ class %shortClassName%Test extends AbstractApiTestCase
         $data = [
             // Edit data
         ];
-        $this->getClient()->asAdmin()->put($this->url . \'/\' . %var%->getUuid(), $data);
+        $this->getClient()->asAdmin()->put($this->url . \'/\' . %var%->%idGetter%, $data);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($data);
@@ -140,7 +144,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         %factory%::assert()->count(1);
 
-        $this->getClient()->asAdmin()->delete($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->asAdmin()->delete($this->url . \'/\' . %var%->%idGetter%);
 
         $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
@@ -171,7 +175,7 @@ class %shortClassName%Test extends AbstractApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->{$method}($this->url . \'/\' . %var%->getUuid());
+        $this->getClient()->{$method}($this->url . \'/\' . %var%->%idGetter%);
 
         $this->assertResponseIsForbidden();
     }
@@ -189,9 +193,10 @@ class %shortClassName%Test extends AbstractApiTestCase
             '%shortClassName%' => $shortClassName,
             '%var%' => $var,
             '%factory%' => $factory,
-            '%pluralize%' => $pluralize,
-            '%folder%' => $folder,
+            '%url%' => $url,
+            '%namespace%' => $namespace,
             '%entityClassName%' => $entityClassName,
+            '%idGetter%' => $idGetter,
         ];
 
         fwrite($file, str_replace(array_keys($arguments), array_values($arguments), ltrim($content)));

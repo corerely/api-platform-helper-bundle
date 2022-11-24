@@ -19,7 +19,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
     // Register command
     $services->set('corerely.api_platform_helper.command.create_resource_test', CreateResourceTestCommand::class)
         ->tag('console.command')
-        ->arg(0, new Parameter('corerely.api_platform_helper.resources_test_folder'))
+        ->arg(0, new Parameter('kernel.project_dir'))
     ;
 
     // Custom ApiPlatform extensions
