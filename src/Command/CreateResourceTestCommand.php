@@ -3,13 +3,17 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Command;
 
+use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
 use ApiPlatform\Util\Inflector;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function Symfony\Component\Translation\t;
 
 #[AsCommand(
     name: 'corerely:create-resource-test',
@@ -18,25 +22,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class CreateResourceTestCommand extends Command
 {
 
-    public function __construct(private string $projectDir)
-    {
+    public function __construct(
+        private readonly string                                 $projectDir,
+        private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
+    ) {
         parent::__construct();
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('entityClassName', InputArgument::REQUIRED, 'ApiPlatform Resource/Entity class name to test')
-            ->addArgument('targetDir', InputArgument::OPTIONAL, 'Target folder in tests folder', 'Resource');
-    }
-
-    protected function normalizeEntityName(string $entityClassName): string
-    {
-        if (!str_contains($entityClassName, '\\')) {
-            return 'App\\Entity\\'.$entityClassName;
-        }
-
-        return $entityClassName;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -46,49 +36,65 @@ class CreateResourceTestCommand extends Command
             '=======================',
             '',
         ]);
-        $entityClassName = $this->normalizeEntityName($input->getArgument('entityClassName'));
-        $targetDir = trim($input->getArgument('targetDir'), '/');
+        $resource = $this->askResource($input, $output);
 
-        if (!class_exists($entityClassName)) {
-            throw new \Exception(sprintf('class %s does not exist', $entityClassName));
-        }
+        $this->generateTest($resource);
 
         $io = new SymfonyStyle($input, $output);
-        $message = sprintf('Generated test for "%s"', $entityClassName);
-        $io->success($message);
-
-        $this->generateTest($entityClassName, $targetDir);
+        $io->success(sprintf('Generated test for "%s"', $resource));
 
         return Command::SUCCESS;
     }
 
-    private function generateTest(string $entityClassName, string $targetDir): void
+    private function askResource(InputInterface $input, OutputInterface $output): string
     {
-        $reflectionClass = new \ReflectionClass($entityClassName);
+        $resources = iterator_to_array($this->resourceNameCollectionFactory->create());
+
+        $helper = $this->getHelper('question');
+        $question = new ChoiceQuestion(
+            'Please select resource',
+            $resources,
+        );
+        $question->setErrorMessage('Resource %s is invalid.');
+
+        return $helper->ask($input, $output, $question);
+    }
+
+    private function generateTest(string $resourceClassName): void
+    {
+        $reflectionClass = new \ReflectionClass($resourceClassName);
         $shortClassName = $reflectionClass->getShortName();
+        // Remove "App\" from namespace
+        $innerNamespace = substr($reflectionClass->getNamespaceName(), 4);
+
+        // Create target file path from namespance
+        $fileAbsPath = sprintf('%s/tests/%s/%sTest.php', $this->projectDir, $innerNamespace, $shortClassName);
+        // If this is doctrine entity move to Resource folder
+        $fileAbsPath = str_replace('/Entity/', '/Resource/', $fileAbsPath);
 
         $var = '$'.lcfirst($shortClassName);
         $factory = $shortClassName.'Factory';
         $url = Inflector::tableize(Inflector::pluralize($shortClassName));
 
-        $namespace = str_replace('App\\', 'App\\Tests\\', $reflectionClass->getNamespaceName());
+        $namespace = sprintf('App\\Tests\\%s', $innerNamespace);
+        // Change namespace to Resource of doctrine entity too
         $namespace = str_replace('\\Entity', '\\Resource', $namespace);
 
-        $hasUuid = property_exists($entityClassName, 'uuid');
+        $hasUuid = property_exists($resourceClassName, 'uuid');
         $idGetter = $hasUuid ? 'getUuid()' : 'getId()';
 
-        $file = fopen(sprintf('%s/tests/%s/%sTest.php', $this->projectDir, $targetDir, $shortClassName), 'w');
+        $file = fopen($fileAbsPath, 'w');
         $content = '
 <?php
 declare(strict_types=1);
 
 namespace %namespace%;
 
-use %entityClassName%;
+use %resourceClassName%;
 use App\Factory\%factory%;
 use App\Tests\AbstractApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
-class %shortClassName%Test extends ApiTestCase
+class %shortClassName%Test extends AbstractApiTestCase
 {
     private string $url = \'/api/%url%\';
 
@@ -116,8 +122,8 @@ class %shortClassName%Test extends ApiTestCase
     public function testCreate(): void
     {
         $data = [
-            \'uuid\' => (string)Uuid::v4(),
             // @TODO Add data
+           '.($hasUuid ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
         ];
         
         %factory%::assert()->empty();
@@ -200,7 +206,7 @@ class %shortClassName%Test extends ApiTestCase
             '%factory%' => $factory,
             '%url%' => $url,
             '%namespace%' => $namespace,
-            '%entityClassName%' => $entityClassName,
+            '%resourceClassName%' => $resourceClassName,
             '%idGetter%' => $idGetter,
         ];
 
