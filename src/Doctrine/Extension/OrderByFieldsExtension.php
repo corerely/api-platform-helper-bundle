@@ -24,7 +24,7 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
     {
         $filterValue = $context['filters'][$this->paramName] ?? null;
         $intersect = array_values(
-            array_intersect($this->fields, is_array($filterValue) ? array_keys($filterValue) : [])
+            array_intersect($this->fields, is_array($filterValue) ? array_keys($filterValue) : []),
         );
 
         // If exactly one order field is provided, and it's allowed by default order fields - apply filter

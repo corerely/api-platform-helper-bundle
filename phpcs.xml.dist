@@ -46,6 +46,10 @@
         <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingTraversableTypeHintSpecification" />
     </rule>
 
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInCall" />
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInClosureUse" />
+    <rule ref="SlevomatCodingStandard.Functions.RequireTrailingCommaInDeclaration" />
+
     <rule ref="Generic.Files.LineLength">
         <exclude-pattern>config/*</exclude-pattern>
         <exclude-pattern>src/*</exclude-pattern>
