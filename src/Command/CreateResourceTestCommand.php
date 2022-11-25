@@ -101,7 +101,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->get($this->url);
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
     }
 
     public function testGetItem(): void
@@ -110,8 +110,8 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->get($this->url.\'/\'.%var%->%idGetter%);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertJsonContains($this->serializeEntity(%var%, [
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains($this->serializeEntity(%var%, [
             /* @TODO add fields */ 
         ]));
     }
@@ -127,10 +127,10 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->asAdmin()->post($this->url, $data);
 
-        $this->assertResponseIsCreated();
+        self::assertResponseIsCreated();
         %factory%::assert()->count(1);
 
-        $this->assertJsonContains($data);
+        self::assertJsonContains($data);
     }
 
     public function testEditItem(): void
@@ -142,8 +142,8 @@ class %shortClassName%Test extends AbstractApiTestCase
         ];
         $this->getClient()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
 
-        $this->assertResponseIsSuccessful();
-        $this->assertJsonContains($data);
+        self::assertResponseIsSuccessful();
+        self::assertJsonContains($data);
     }
 
     public function testDelete(): void
@@ -154,7 +154,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
 
-        $this->assertResponseIsNoContent();
+        self::assertResponseIsNoContent();
         %factory%::assert()->empty();
     }
 
@@ -167,7 +167,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url);
 
-        $this->assertResponseIsForbidden();
+        self::assertResponseIsForbidden();
     }
 
     public function collectionMethodDataProvider(): iterable
@@ -185,7 +185,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url.\'/\'.%var%->%idGetter%);
 
-        $this->assertResponseIsForbidden();
+        self::assertResponseIsForbidden();
     }
 
     public function itemMethodDataProvider(): iterable
