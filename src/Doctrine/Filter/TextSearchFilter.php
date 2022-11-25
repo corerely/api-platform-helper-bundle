@@ -57,8 +57,8 @@ final class TextSearchFilter extends AbstractFilter
                 $orX->add(
                     $queryBuilder->expr()->like(
                         $this->wrapCase(sprintf('%s.%s', $alias, $field)),
-                        (string)$queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'")
-                    )
+                        (string)$queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'"),
+                    ),
                 );
             }
         }

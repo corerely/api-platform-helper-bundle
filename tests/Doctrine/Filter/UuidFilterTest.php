@@ -32,8 +32,8 @@ class UuidFilterTest extends AbstractDoctrineExtensionTest
         $filter->apply($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['uuid' => '/api/' . $uuid]]);
 
         $result = $queryBuilder->getQuery()->getResult();
-        $this->assertCount(1, $result);
-        $this->assertSame($dummy->getId(), $result[0]->getId());
+        self::assertCount(1, $result);
+        self::assertSame($dummy->getId(), $result[0]->getId());
     }
 
     public function testFilterByUuidsAssociation(): void
@@ -63,8 +63,8 @@ class UuidFilterTest extends AbstractDoctrineExtensionTest
         $filter->apply($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['dummyAssociations' => ['/api/' . $uuid1, '/api/' . $uuid2]]]);
 
         $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
-        $this->assertCount(2, $result);
-        $this->assertSame($dummy1->getId(), $result[0]->getId());
-        $this->assertSame($dummy2->getId(), $result[1]->getId());
+        self::assertCount(2, $result);
+        self::assertSame($dummy1->getId(), $result[0]->getId());
+        self::assertSame($dummy2->getId(), $result[1]->getId());
     }
 }

@@ -30,8 +30,8 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $iri]]);
 
         $result = $queryBuilder->getQuery()->getResult();
-        $this->assertCount(1, $result);
-        $this->assertSame($dummy->getId(), $result[0]->getId());
+        self::assertCount(1, $result);
+        self::assertSame($dummy->getId(), $result[0]->getId());
     }
 
     public function testFilterWithIriIds(): void
@@ -55,9 +55,9 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => [$iri1, $iri2]]]);
 
         $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
-        $this->assertCount(2, $result);
-        $this->assertSame($dummy1->getId(), $result[0]->getId());
-        $this->assertSame($dummy2->getId(), $result[1]->getId());
+        self::assertCount(2, $result);
+        self::assertSame($dummy1->getId(), $result[0]->getId());
+        self::assertSame($dummy2->getId(), $result[1]->getId());
     }
 
     public function testFilterWithNoFilters(): void
@@ -75,6 +75,6 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionT
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName);
 
         $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
-        $this->assertCount(3, $result);
+        self::assertCount(3, $result);
     }
 }

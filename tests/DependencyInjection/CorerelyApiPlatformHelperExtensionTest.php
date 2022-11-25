@@ -18,20 +18,20 @@ class CorerelyApiPlatformHelperExtensionTest extends AbstractExtensionTestCase
     public function testLoadPermanentFilterExtension(): void
     {
         $serviceId = 'corerely.api_platform_helper.doctrine.permanent_filter_extension';
-        $this->assertContainerBuilderHasServiceDefinitionWithTag($serviceId, 'api_platform.doctrine.orm.query_extension.collection');
-        $this->assertContainerBuilderHasServiceDefinitionWithTag($serviceId, 'api_platform.doctrine.orm.query_extension.item');
+        self::assertContainerBuilderHasServiceDefinitionWithTag($serviceId, 'api_platform.doctrine.orm.query_extension.collection');
+        self::assertContainerBuilderHasServiceDefinitionWithTag($serviceId, 'api_platform.doctrine.orm.query_extension.item');
     }
 
     public function testLoadCollectionExtensions(): void
     {
-        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', 'api_platform.doctrine.orm.query_extension.collection');
-        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.order_by_fields_extension', 'api_platform.doctrine.orm.query_extension.collection');
+        self::assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', 'api_platform.doctrine.orm.query_extension.collection');
+        self::assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.order_by_fields_extension', 'api_platform.doctrine.orm.query_extension.collection');
     }
 
     public function testLoadApiPlatformFilters(): void
     {
-        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.text_search_filter', 'api_platform.filter');
-        $this->assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.uuid_filter', 'api_platform.filter');
+        self::assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.text_search_filter', 'api_platform.filter');
+        self::assertContainerBuilderHasServiceDefinitionWithTag('corerely.api_platform_helper.doctrine.uuid_filter', 'api_platform.filter');
     }
 
     protected function getContainerExtensions(): array

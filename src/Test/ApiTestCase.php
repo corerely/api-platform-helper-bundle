@@ -120,7 +120,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
             }
 
             $serialized[$property] = $this->serializeValue(
-                $propertyAccessor->getValue($entity, $property)
+                $propertyAccessor->getValue($entity, $property),
             );
         }
 

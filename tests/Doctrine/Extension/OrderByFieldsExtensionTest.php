@@ -34,7 +34,7 @@ class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
         $expect = $order === 'asc' ? [$d1, $d4, $d3, $d2] : [$d2, $d3, $d4, $d1];
 
         foreach ($expect as $key => $item) {
-            $this->assertSame($item->getId(), $result[$key]->getId());
+            self::assertSame($item->getId(), $result[$key]->getId());
         }
     }
 

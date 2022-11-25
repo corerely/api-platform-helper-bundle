@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests;
 
+use Corerely\ApiPlatformHelperBundle\Command\CreateResourceTestCommand;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\PermanentFilterExtension;
@@ -13,46 +14,51 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BundleInitializationTest extends KernelTestCase
 {
-    private ContainerInterface $testContainer;
+    private static ContainerInterface $testContainer;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         self::bootKernel();
-        $this->testContainer = self::getContainer();
+        self::$testContainer = self::getContainer();
     }
 
     public function testPermanentFilterExtensionService(): void
     {
-        $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class);
+        self::assertServiceConfigured('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class);
     }
 
     public function testIdentifierCollectionFilterExtensionService(): void
     {
-        $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', IdentifierCollectionFilterExtension::class);
+        self::assertServiceConfigured('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', IdentifierCollectionFilterExtension::class);
     }
 
     public function testOrderByFieldsExtensionService(): void
     {
-        $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.order_by_fields_extension', OrderByFieldsExtension::class);
+        self::assertServiceConfigured('corerely.api_platform_helper.doctrine.order_by_fields_extension', OrderByFieldsExtension::class);
     }
 
     public function testTextSearchFilterService(): void
     {
-        $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.text_search_filter', TextSearchFilter::class);
+        self::assertServiceConfigured('corerely.api_platform_helper.doctrine.text_search_filter', TextSearchFilter::class);
     }
 
     public function testUuidFilterService(): void
     {
-        $this->assertServiceConfigured('corerely.api_platform_helper.doctrine.uuid_filter', UuidFilter::class);
+        self::assertServiceConfigured('corerely.api_platform_helper.doctrine.uuid_filter', UuidFilter::class);
     }
 
-    private function assertServiceConfigured(string $id, string $className): void
+    public function testCreateResourceTestCommandService(): void
     {
-        $this->assertTrue($this->testContainer->has($id));
+        self::assertServiceConfigured('corerely.api_platform_helper.command.create_resource_test', CreateResourceTestCommand::class);
+    }
 
-        $service = $this->testContainer->get($id);
-        $this->assertInstanceOf($className, $service);
+    private static function assertServiceConfigured(string $id, string $className): void
+    {
+        self::assertTrue(self::$testContainer->has($id));
+
+        $service = self::$testContainer->get($id);
+        self::assertInstanceOf($className, $service);
     }
 }
