@@ -89,19 +89,19 @@ namespace %namespace%;
 
 use %resourceClassName%;
 use App\Factory\%factory%;
-use App\Tests\AbstractApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
+use App\Tests\ApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
-class %shortClassName%Test extends AbstractApiTestCase
+class %shortClassName%Test extends ApiTestCase
 {
     private string $url = \'/api/%url%\';
 
     public function testGetCollection(): void
     {
-        %factory%::createMany(5);
+        %factory%::createMany(3);
 
         $this->getClient()->get($this->url);
 
-        self::assertResponseIsSuccessful();
+        $this->assertResponseIsSuccessful();
     }
 
     public function testGetItem(): void
@@ -110,9 +110,9 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->get($this->url.\'/\'.%var%->%idGetter%);
 
-        self::assertResponseIsSuccessful();
-        self::assertJsonContains($this->serializeEntity(%var%, [
-            /* @TODO add fields */ 
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains($this->serializeEntity(%var%, [
+            /* @TODO add fields */
         ]));
     }
 
@@ -122,15 +122,15 @@ class %shortClassName%Test extends AbstractApiTestCase
             // @TODO Add data
            '.($hasUuid ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
         ];
-        
+
         %factory%::assert()->empty();
 
         $this->getClient()->asAdmin()->post($this->url, $data);
 
-        self::assertResponseIsCreated();
+        $this->assertResponseIsCreated();
         %factory%::assert()->count(1);
 
-        self::assertJsonContains($data);
+        $this->assertJsonContains($data);
     }
 
     public function testEditItem(): void
@@ -142,8 +142,8 @@ class %shortClassName%Test extends AbstractApiTestCase
         ];
         $this->getClient()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
 
-        self::assertResponseIsSuccessful();
-        self::assertJsonContains($data);
+        $this->assertResponseIsSuccessful();
+        $this->assertJsonContains($data);
     }
 
     public function testDelete(): void
@@ -154,7 +154,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
 
-        self::assertResponseIsNoContent();
+        $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
     }
 
@@ -167,7 +167,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url);
 
-        self::assertResponseIsForbidden();
+        $this->assertResponseIsForbidden();
     }
 
     public function collectionMethodDataProvider(): iterable
@@ -185,7 +185,7 @@ class %shortClassName%Test extends AbstractApiTestCase
 
         $this->getClient()->{$method}($this->url.\'/\'.%var%->%idGetter%);
 
-        self::assertResponseIsForbidden();
+        $this->assertResponseIsForbidden();
     }
 
     public function itemMethodDataProvider(): iterable
