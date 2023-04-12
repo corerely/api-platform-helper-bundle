@@ -29,11 +29,6 @@ trait FilterByIdsCommonTrait
         return array_values($value);
     }
 
-    private function uuidsToBinary(array $ids): array
-    {
-        return array_map(static fn(string $uuid) => Uuid::fromString($uuid)->toBinary(), $ids);
-    }
-
     private function andWhere(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $alias, string $fieldName, array $ids): void
     {
         $fieldName = sprintf('%s.%s', $alias, $fieldName);
