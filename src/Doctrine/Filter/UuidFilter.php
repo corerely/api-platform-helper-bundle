@@ -7,6 +7,8 @@ use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Doctrine\Orm\PropertyHelperTrait;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
 use Doctrine\ORM\Query\Expr\Join;
@@ -95,7 +97,7 @@ final class UuidFilter extends AbstractFilter
             }
 
             return $item->getUuid()->toBinary();
-        } catch (\Exception) {
+        } catch (InvalidArgumentException | ItemNotFoundException) {
             // ignore
         }
 

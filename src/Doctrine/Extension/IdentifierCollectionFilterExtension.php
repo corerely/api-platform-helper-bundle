@@ -6,6 +6,8 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine\Extension;
 use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\ApiProperty;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
@@ -46,7 +48,7 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             $item = $this->iriConverter->getResourceFromIri($iri);
 
             return $item->getUuid()->toBinary();
-        } catch (\Exception) {
+        } catch (InvalidArgumentException | ItemNotFoundException) {
         }
 
         return null;
@@ -61,7 +63,7 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
 
             return $item->getId();
-        } catch (\Exception) {
+        } catch (InvalidArgumentException | ItemNotFoundException) {
         }
 
         return null;

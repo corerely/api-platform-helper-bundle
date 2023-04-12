@@ -3,12 +3,12 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
+use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Uid\UuidV4;
 
 class UuidFilterTest extends AbstractDoctrineExtensionTest
@@ -22,13 +22,11 @@ class UuidFilterTest extends AbstractDoctrineExtensionTest
 
         DummyFactory::assert()->count(4);
 
-        $mockedRouter = $this->createMock(RouterInterface::class);
-        $mockedRouter->expects($this->once())->method('match')->with('/api/' . $uuid)->willReturn(
-            ['_api_identifiers' => ['uuid'], 'uuid' => $uuid],
-        );
+        $mockIriConverter = $this->createMock(IriConverterInterface::class);
+        $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with('/api/' . $uuid)->willReturn($dummy->object());
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
-        $filter = new UuidFilter($mockedRouter, $this->managerRegistry, properties: ['uuid' => null]);
+        $filter = new UuidFilter($mockIriConverter, $this->managerRegistry, properties: ['uuid' => null]);
         $filter->apply($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['uuid' => '/api/' . $uuid]]);
 
         $result = $queryBuilder->getQuery()->getResult();
@@ -52,14 +50,14 @@ class UuidFilterTest extends AbstractDoctrineExtensionTest
 
         DummyFactory::assert()->count(5);
 
-        $mockedRouter = $this->createMock(RouterInterface::class);
-        $mockedRouter->expects($this->exactly(2))->method('match')->willReturn(
-            ['_api_identifiers' => ['uuid'], 'uuid' => $uuid1],
-            ['_api_identifiers' => ['uuid'], 'uuid' => $uuid2],
+        $mockIriConverter = $this->createMock(IriConverterInterface::class);
+        $mockIriConverter->expects($this->exactly(2))->method('getResourceFromIri')->willReturn(
+            $dummy1->getDummyAssociations()->first(),
+            $dummy2->getDummyAssociations()->first(),
         );
 
         $queryBuilder = $this->createQueryBuilder();
-        $filter = new UuidFilter($mockedRouter, $this->managerRegistry, properties: ['dummyAssociations' => null]);
+        $filter = new UuidFilter($mockIriConverter, $this->managerRegistry, properties: ['dummyAssociations' => null]);
         $filter->apply($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['dummyAssociations' => ['/api/' . $uuid1, '/api/' . $uuid2]]]);
 
         $result = $queryBuilder->orderBy('o.id', 'asc')->getQuery()->getResult();
