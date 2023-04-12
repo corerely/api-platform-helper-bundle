@@ -39,7 +39,7 @@ final class UuidFilter extends AbstractFilter
                 'property' => $property,
                 'type' => 'string',
                 'required' => false,
-                'swagger' => [
+                'openapi' => [
                     'description' => 'Filter Uuid property.',
                     'name' => 'Uuid Search filter',
                 ],
