@@ -3,17 +3,18 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Doctrine\Filter;
 
+use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Doctrine\Orm\PropertyHelperTrait;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
+use ApiPlatform\Exception\InvalidArgumentException;
+use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Routing\Exception\ExceptionInterface;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 
 final class UuidFilter extends AbstractFilter
@@ -21,7 +22,7 @@ final class UuidFilter extends AbstractFilter
     use PropertyHelperTrait;
     use FilterByIdsCommonTrait;
 
-    public function __construct(private readonly RouterInterface $router, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
+    public function __construct(private readonly IriConverterInterface $iriConverter, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
     {
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
@@ -79,28 +80,27 @@ final class UuidFilter extends AbstractFilter
             return;
         }
 
-        $uuids = array_map($this->getUuidFromIri(...), $values);
-        $uuids = $this->uuidsToBinary($uuids);
+        $uuids = array_filter(array_map($this->getUuidFromIri(...), $values));
+        if (empty($uuids)) {
+            return;
+        }
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);
     }
 
-    protected function getUuidFromIri(string $iri): string
+    protected function getUuidFromIri(string $iri): string|null
     {
         try {
-            $parameters = $this->router->match($iri);
-            $identifiers = $parameters['_api_identifiers'] ?? null;
-
-            if (is_array($identifiers)
-                && in_array('uuid', $identifiers, true)
-                && ($uuid = $parameters['uuid'] ?? null)
-            ) {
-                return $uuid;
+            $item = $this->iriConverter->getResourceFromIri($iri);
+            if (!method_exists($item, 'getUuid')) {
+                throw new \Exception('Item does not have getUuid method');
             }
-        } catch (ExceptionInterface) {
+
+            return $item->getUuid()->toBinary();
+        } catch (InvalidArgumentException | ItemNotFoundException) {
             // ignore
         }
 
-        return $iri;
+        return null;
     }
 }

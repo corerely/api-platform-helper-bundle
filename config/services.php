@@ -50,7 +50,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->set('corerely.api_platform_helper.doctrine.uuid_filter', UuidFilter::class)
         ->tag('api_platform.filter')
-        ->arg(0, new Reference('router'))
+        ->arg(0, new Reference('api_platform.symfony.iri_converter'))
         ->arg(1, new Reference('doctrine'))
         ->arg(2, service('logger')->nullOnInvalid())
         ->arg(3, null)
