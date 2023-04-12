@@ -19,7 +19,7 @@ jobs:
                 symfony: [ '6.1.*', '6.2.*' ]
 
         steps:
-            - uses: actions/checkout@master
+            - uses: actions/checkout@v3
 
             - name: Setup PHP ${{ matrix.php }}
               uses: shivammathur/setup-php@v2
