@@ -5,7 +5,6 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine\Common;
 
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Component\Uid\Uuid;
 
 trait FilterByIdsCommonTrait
 {
