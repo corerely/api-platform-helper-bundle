@@ -19,15 +19,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 
     private PropertyAccessorInterface $propertyAccessor;
 
-    /**
-     * @deprecated use "getClient" instead
-     */
     protected function createClientAdapter(): ClientAdapter
-    {
-        return $this->getClient();
-    }
-
-    protected function getClient(): ClientAdapter
     {
         return new ClientAdapter(self::createClient(), $this->getUserManager(), $this->getClientAuthenticator());
     }
