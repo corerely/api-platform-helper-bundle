@@ -75,6 +75,11 @@ class ClientAdapter
         return $this->authenticateClient()->request('PUT', $url, $this->createClientOptions($data, $files));
     }
 
+    public function patch(string $url, array $data = [], array $files = null): ResponseInterface
+    {
+        return $this->authenticateClient()->request('PATCH', $url, $this->createClientOptions($data, $files));
+    }
+
     public function delete(string $url): ResponseInterface
     {
         return $this->authenticateClient()->request('DELETE', $url);
