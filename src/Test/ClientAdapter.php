@@ -77,7 +77,11 @@ class ClientAdapter
 
     public function patch(string $url, array $data = [], array $files = null): ResponseInterface
     {
-        return $this->authenticateClient()->request('PATCH', $url, $this->createClientOptions($data, $files));
+        $options = $this->createClientOptions($data, $files) + [
+            'headers' => ['Content-Type' => 'application/merge-patch+json'],
+        ];
+
+        return $this->authenticateClient()->request('PATCH', $url, $options);
     }
 
     public function delete(string $url): ResponseInterface
