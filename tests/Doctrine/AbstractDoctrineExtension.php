@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
-abstract class AbstractDoctrineExtensionTest extends KernelTestCase
+abstract class AbstractDoctrineExtension extends KernelTestCase
 {
     use Factories, ResetDatabase;
 

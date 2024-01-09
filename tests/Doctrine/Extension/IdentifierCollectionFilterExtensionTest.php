@@ -6,10 +6,10 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
-use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 
-class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtensionTest
+class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
 {
     
     public function testFilterWithIriId(): void
