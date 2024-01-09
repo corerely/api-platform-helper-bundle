@@ -9,13 +9,12 @@ use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTes
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
 {
 
-    /**
-     * @dataProvider ordersDataProvider
-     */
+    #[DataProvider('ordersDataProvider')]
     public function testApplyToCollectionWithSupportedField(string $order): void
     {
         $ext = new OrderByFieldsExtension('order', ['name']);
@@ -38,7 +37,7 @@ class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
         }
     }
 
-    public function ordersDataProvider(): iterable
+    public static function ordersDataProvider(): iterable
     {
         yield ['asc'];
         yield ['desc'];
