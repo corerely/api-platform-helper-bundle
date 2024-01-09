@@ -5,14 +5,14 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\TextSearchFilter;
-use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
 use Zenstruck\Foundry\Proxy;
 
-class TextSearchFilterTest extends AbstractDoctrineExtensionTest
+class TextSearchFilterTest extends AbstractDoctrineExtension
 {
     public function testFilterByProperty(): void
     {

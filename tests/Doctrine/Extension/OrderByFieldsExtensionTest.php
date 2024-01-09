@@ -5,17 +5,16 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
-use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
+class OrderByFieldsExtensionTest extends AbstractDoctrineExtension
 {
 
-    /**
-     * @dataProvider ordersDataProvider
-     */
+    #[DataProvider('ordersDataProvider')]
     public function testApplyToCollectionWithSupportedField(string $order): void
     {
         $ext = new OrderByFieldsExtension('order', ['name']);
@@ -38,7 +37,7 @@ class OrderByFieldsExtensionTest extends AbstractDoctrineExtensionTest
         }
     }
 
-    public function ordersDataProvider(): iterable
+    public static function ordersDataProvider(): iterable
     {
         yield ['asc'];
         yield ['desc'];

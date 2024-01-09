@@ -14,8 +14,11 @@ class ClientAdapter
     private bool $isMultipartFormData = false;
     private bool $asAnonymous = false;
 
-    public function __construct(private readonly Client $client, private readonly UserManagerInterface $userManager, private readonly ClientAuthenticatorInterface $clientAuthenticator)
-    {
+    public function __construct(
+        private readonly Client                       $client,
+        private readonly UserManagerInterface         $userManager,
+        private readonly ClientAuthenticatorInterface $clientAuthenticator,
+    ) {
         $this->client->setDefaultOptions([
             'headers' => ['Content-Type' => 'application/ld+json'],
         ]);
@@ -59,7 +62,7 @@ class ClientAdapter
     public function get(string $url, array $queryParams = null): ResponseInterface
     {
         if ($queryParams) {
-            $url .= str_contains($url, '?') ? '&' : '?' . http_build_query($queryParams);
+            $url .= str_contains($url, '?') ? '&' : '?'.http_build_query($queryParams);
         }
 
         return $this->authenticateClient()->request('GET', $url);
@@ -78,8 +81,8 @@ class ClientAdapter
     public function patch(string $url, array $data = [], array $files = null): ResponseInterface
     {
         $options = $this->createClientOptions($data, $files) + [
-            'headers' => ['Content-Type' => 'application/merge-patch+json'],
-        ];
+                'headers' => ['Content-Type' => 'application/merge-patch+json'],
+            ];
 
         return $this->authenticateClient()->request('PATCH', $url, $options);
     }

@@ -6,12 +6,12 @@ namespace Corerely\ApiPlatformHelperBundle\Test;
 interface UserManagerInterface
 {
     /**
-     * Return user with role of regular user
+     * Return user with a role of regular user
      */
     public function getRegularUser(): object;
 
     /**
-     * Return user with role of admin
+     * Return user with a role of admin
      */
     public function getAdminUser(): object;
 }

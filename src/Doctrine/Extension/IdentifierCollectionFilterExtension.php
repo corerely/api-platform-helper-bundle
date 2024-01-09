@@ -18,8 +18,9 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
 {
     use FilterByIdsCommonTrait;
 
-    public function __construct(private readonly IriConverterInterface $iriConverter)
-    {
+    public function __construct(
+        private readonly IriConverterInterface $iriConverter,
+    ) {
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
@@ -35,7 +36,7 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             : ['id', $this->getIdFromIri(...)];
         $ids = array_filter(array_map($normalizer, $value));
 
-        if (!$ids) {
+        if (! $ids) {
             return;
         }
 
@@ -48,7 +49,7 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             $item = $this->iriConverter->getResourceFromIri($iri);
 
             return $item->getUuid()->toBinary();
-        } catch (InvalidArgumentException | ItemNotFoundException) {
+        } catch (InvalidArgumentException|ItemNotFoundException) {
         }
 
         return null;
@@ -63,7 +64,7 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
             $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
 
             return $item->getId();
-        } catch (InvalidArgumentException | ItemNotFoundException) {
+        } catch (InvalidArgumentException|ItemNotFoundException) {
         }
 
         return null;
@@ -71,12 +72,12 @@ final class IdentifierCollectionFilterExtension implements QueryCollectionExtens
 
     private function isUuidMode(string $resourceClass): bool
     {
-        if (!class_exists(Uuid::class)) {
+        if (! class_exists(Uuid::class)) {
             return false;
         }
 
         $reflectionClass = new \ReflectionClass($resourceClass);
-        if (!$reflectionClass->hasProperty('uuid')) {
+        if (! $reflectionClass->hasProperty('uuid')) {
             return false;
         }
 

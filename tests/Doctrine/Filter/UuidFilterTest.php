@@ -6,12 +6,12 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
-use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtensionTest;
+use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Symfony\Component\Uid\UuidV4;
 
-class UuidFilterTest extends AbstractDoctrineExtensionTest
+class UuidFilterTest extends AbstractDoctrineExtension
 {
     public function testFilterByUuid(): void
     {

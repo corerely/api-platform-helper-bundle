@@ -16,8 +16,10 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
      * @var string $paramName ['order' => ['createdAt' => 'desc']]
      * @var array $fields ['createdAt', 'updatedAt']
      */
-    public function __construct(private readonly string $paramName, private readonly array $fields)
-    {
+    public function __construct(
+        private readonly string $paramName,
+        private readonly array  $fields,
+    ) {
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
@@ -51,12 +53,12 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
 
     private function normalizeDirection(mixed $direction): ?string
     {
-        if (!is_string($direction)) {
+        if (! is_string($direction)) {
             return null;
         }
 
         $direction = strtoupper($direction);
-        if (!in_array($direction, [OrderFilterInterface::DIRECTION_ASC, OrderFilterInterface::DIRECTION_DESC], true)) {
+        if (! in_array($direction, [OrderFilterInterface::DIRECTION_ASC, OrderFilterInterface::DIRECTION_DESC], true)) {
             return null;
         }
 
