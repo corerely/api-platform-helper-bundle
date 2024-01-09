@@ -22,14 +22,19 @@ final class UuidFilter extends AbstractFilter
     use PropertyHelperTrait;
     use FilterByIdsCommonTrait;
 
-    public function __construct(private readonly IriConverterInterface $iriConverter, ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null)
-    {
+    public function __construct(
+        private readonly IriConverterInterface $iriConverter,
+        ManagerRegistry                        $managerRegistry,
+        LoggerInterface                        $logger = null,
+        ?array                                 $properties = null,
+        ?NameConverterInterface                $nameConverter = null,
+    ) {
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
 
     public function getDescription(string $resourceClass): array
     {
-        if (!$this->properties) {
+        if (! $this->properties) {
             return [];
         }
 
@@ -52,8 +57,8 @@ final class UuidFilter extends AbstractFilter
     protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
     {
         if (null === $value ||
-            !$this->isPropertyEnabled($property, $resourceClass) ||
-            !$this->isPropertyMapped($property, $resourceClass, true)
+            ! $this->isPropertyEnabled($property, $resourceClass) ||
+            ! $this->isPropertyMapped($property, $resourceClass, true)
         ) {
             return;
         }
@@ -76,7 +81,7 @@ final class UuidFilter extends AbstractFilter
         }
 
         $metadata = $this->getNestedMetadata($resourceClass, $associations);
-        if (!$metadata->hasField($field)) {
+        if (! $metadata->hasField($field)) {
             return;
         }
 
@@ -92,12 +97,12 @@ final class UuidFilter extends AbstractFilter
     {
         try {
             $item = $this->iriConverter->getResourceFromIri($iri);
-            if (!method_exists($item, 'getUuid')) {
+            if (! method_exists($item, 'getUuid')) {
                 throw new \Exception('Item does not have getUuid method');
             }
 
             return $item->getUuid()->toBinary();
-        } catch (InvalidArgumentException | ItemNotFoundException) {
+        } catch (InvalidArgumentException|ItemNotFoundException) {
             // ignore
         }
 

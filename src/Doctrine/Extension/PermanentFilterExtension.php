@@ -15,8 +15,9 @@ use Symfony\Component\DependencyInjection\ServiceLocator;
 final class PermanentFilterExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
 
-    public function __construct(private readonly ServiceLocator $locator)
-    {
+    public function __construct(
+        private readonly ServiceLocator $locator,
+    ) {
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
@@ -31,7 +32,7 @@ final class PermanentFilterExtension implements QueryCollectionExtensionInterfac
 
     private function getFilter(string $className): PermanentFilterInterface
     {
-        if (!$this->locator->has($className)) {
+        if (! $this->locator->has($className)) {
             throw new \InvalidArgumentException(sprintf('Permanent filter "%s" was not found. Did you forget to implement interface "%s"', $className, PermanentFilterInterface::class));
         }
 

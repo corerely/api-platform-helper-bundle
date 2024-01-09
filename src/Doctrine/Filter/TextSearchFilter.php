@@ -15,8 +15,14 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 final class TextSearchFilter extends AbstractFilter
 {
 
-    public function __construct(ManagerRegistry $managerRegistry, LoggerInterface $logger = null, ?array $properties = null, ?NameConverterInterface $nameConverter = null, private readonly string $parameterName = 'q', private readonly bool $caseSensitive = false)
-    {
+    public function __construct(
+        ManagerRegistry         $managerRegistry,
+        LoggerInterface         $logger = null,
+        ?array                  $properties = null,
+        ?NameConverterInterface $nameConverter = null,
+        private readonly string $parameterName = 'q',
+        private readonly bool   $caseSensitive = false,
+    ) {
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
 
@@ -29,7 +35,7 @@ final class TextSearchFilter extends AbstractFilter
         }
 
         // Do nothing if search is empty
-        $value = trim((string) $value);
+        $value = trim((string)$value);
         if (empty($value)) {
             return;
         }
@@ -65,12 +71,13 @@ final class TextSearchFilter extends AbstractFilter
 
         $queryBuilder
             ->andWhere($orX)
-            ->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value));
+            ->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value))
+        ;
     }
 
     public function getDescription(string $resourceClass): array
     {
-        if (!$this->properties) {
+        if (! $this->properties) {
             return [];
         }
 
