@@ -41,7 +41,9 @@ final class PermanentFilterExtension implements QueryCollectionExtensionInterfac
 
     private function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation, array $context, ?array $identifiers): void
     {
-        $attributes = (new \ReflectionClass($resourceClass))->getAttributes(ApiPermanentFilter::class);
+        $operationResouceClass = $operation?->getClass() ?? $resourceClass;
+
+        $attributes = (new \ReflectionClass($operationResouceClass))->getAttributes(ApiPermanentFilter::class);
 
         foreach ($attributes as $attribute) {
             /** @var ApiPermanentFilter $attributeInstance */
