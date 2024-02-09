@@ -16,18 +16,18 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_lo
 return static function (ContainerConfigurator $containerConfigurator): void {
     $services = $containerConfigurator->services();
 
-    // Register command
     $services->set('corerely.api_platform_helper.command.create_resource_test', CreateResourceTestCommand::class)
         ->tag('console.command')
         ->arg(0, new Parameter('kernel.project_dir'))
         ->arg(1, new Reference('api_platform.metadata.resource.name_collection_factory'))
     ;
 
-    // Custom ApiPlatform extensions
     $services->set('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class)
         ->arg(0, tagged_locator('corerely.api_platform_helper.doctrine.permanent_filter'))
         ->tag('api_platform.doctrine.orm.query_extension.collection')
-        ->tag('api_platform.doctrine.orm.query_extension.item');
+        ->tag('api_platform.doctrine.orm.query_extension.item')
+        ->alias(PermanentFilterExtension::class, 'corerely.api_platform_helper.doctrine.permanent_filter_extension')
+    ;
 
     $services->set('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', IdentifierCollectionFilterExtension::class)
         ->arg(0, new Reference('api_platform.symfony.iri_converter'))
