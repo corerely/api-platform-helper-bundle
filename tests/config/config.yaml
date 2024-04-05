@@ -1,5 +1,5 @@
 framework:
-    secret: secrect_test
+    secret: secret_test
     test: true
     router:
         utf8: true
