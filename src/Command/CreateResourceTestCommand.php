@@ -5,6 +5,7 @@ namespace Corerely\ApiPlatformHelperBundle\Command;
 
 use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
 use ApiPlatform\Util\Inflector;
+use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,7 @@ class CreateResourceTestCommand extends Command
     public function __construct(
         private readonly string                                 $projectDir,
         private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
+        private readonly IdentifierMode                         $identifierMode,
     ) {
         parent::__construct();
     }
@@ -77,8 +79,8 @@ class CreateResourceTestCommand extends Command
         // Change namespace to Resource of doctrine entity too
         $namespace = str_replace('\\Entity', '\\Resource', $namespace);
 
-        $hasUuid = property_exists($resourceClassName, 'uuid');
-        $idGetter = $hasUuid ? 'getUuid()' : 'getId()';
+        $isUuidMode = $this->identifierMode->isUuid();
+        $idGetter = $isUuidMode ? 'getUuid()' : 'getId()';
 
         $file = fopen($fileAbsPath, 'w');
         $content = '
@@ -89,7 +91,7 @@ namespace %namespace%;
 
 use %resourceClassName%;
 use App\Factory\%factory%;
-use App\Tests\ApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
+use App\Tests\ApiTestCase;'.($isUuidMode ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
 class %shortClassName%Test extends ApiTestCase
 {
@@ -120,7 +122,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         $data = [
             // @TODO Add data
-           '.($hasUuid ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
+           '.($isUuidMode ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
         ];
 
         %factory%::assert()->empty();

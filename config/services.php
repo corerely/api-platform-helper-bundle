@@ -20,6 +20,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->tag('console.command')
         ->arg(0, new Parameter('kernel.project_dir'))
         ->arg(1, new Reference('api_platform.metadata.resource.name_collection_factory'))
+        ->arg(2, new Parameter('corerely.api_platform_helper.identifier_mode'))
     ;
 
     $services->set('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class)
@@ -31,6 +32,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
 
     $services->set('corerely.api_platform_helper.doctrine.identifier_collection_filter_extension', IdentifierCollectionFilterExtension::class)
         ->arg(0, new Reference('api_platform.symfony.iri_converter'))
+        ->arg(1, new Parameter('corerely.api_platform_helper.identifier_mode'))
         ->tag('api_platform.doctrine.orm.query_extension.collection')
     ;
 
