@@ -6,11 +6,13 @@ namespace Corerely\ApiPlatformHelperBundle\Doctrine\Filter;
 use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Doctrine\Orm\PropertyHelperTrait;
+use ApiPlatform\Doctrine\Orm\Util\QueryBuilderHelper;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Exception\InvalidArgumentException;
 use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
+use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -63,31 +65,29 @@ final class UuidFilter extends AbstractFilter
             return;
         }
 
-        $values = $this->normalizeValue((array)$value);
-        if (null === $values) {
+        $values = $this->normalizeValue((array) $value);
+        if (! $values) {
             return;
         }
 
-        $metadata = $this->getClassMetadata($resourceClass);
-        if ($metadata->hasAssociation($property)) {
-            $property .= '.uuid';
+        $uuids = array_filter(array_map($this->getUuidFromIri(...), $values));
+        if (! $uuids) {
+            return;
         }
 
         $alias = $queryBuilder->getRootAliases()[0];
         $field = $property;
         $associations = [];
+
         if ($this->isPropertyNested($property, $resourceClass)) {
             [$alias, $field, $associations] = $this->addJoinsForNestedProperty($property, $alias, $queryBuilder, $queryNameGenerator, $resourceClass, Join::INNER_JOIN);
         }
 
         $metadata = $this->getNestedMetadata($resourceClass, $associations);
-        if (! $metadata->hasField($field)) {
-            return;
-        }
 
-        $uuids = array_filter(array_map($this->getUuidFromIri(...), $values));
-        if (empty($uuids)) {
-            return;
+        if ($metadata->hasAssociation($field)) {
+            $alias = QueryBuilderHelper::addJoinOnce($queryBuilder, $queryNameGenerator, $alias, $field);
+            $field = IdentifierMode::UUID->identifierColumnName();
         }
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);
@@ -96,7 +96,7 @@ final class UuidFilter extends AbstractFilter
     protected function getUuidFromIri(string $iri): string|null
     {
         try {
-            $item = $this->iriConverter->getResourceFromIri($iri);
+            $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
             if (! method_exists($item, 'getUuid')) {
                 throw new \Exception('Item does not have getUuid method');
             }
