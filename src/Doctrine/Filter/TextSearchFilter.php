@@ -15,6 +15,10 @@ use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 final class TextSearchFilter extends AbstractFilter
 {
 
+    public const SEARCH_START = 'start';
+    public const SEARCH_END = 'end';
+    public const SEARCH_PARTIAL = 'partial';
+
     public function __construct(
         ManagerRegistry         $managerRegistry,
         LoggerInterface         $logger = null,
@@ -35,18 +39,20 @@ final class TextSearchFilter extends AbstractFilter
         }
 
         // Do nothing if search is empty
-        $value = trim((string)$value);
+        $value = trim((string) $value);
         if (empty($value)) {
             return;
         }
 
         $parameterName = $queryNameGenerator->generateParameterName($this->parameterName);
-        $orX = $queryBuilder->expr()->orX();
+        $ors = [];
 
-        foreach ($this->properties as $property => $_) {
+        foreach ($this->properties as $property => $strategy) {
+            $strategy ??= self::SEARCH_PARTIAL;
             $alias = $queryBuilder->getRootAliases()[0];
             $field = $property;
 
+            $associations = [];
             if ($this->isPropertyNested($property, $resourceClass)) {
                 [$alias, $field, $associations] = $this->addJoinsForNestedProperty(
                     $property,
@@ -57,20 +63,39 @@ final class TextSearchFilter extends AbstractFilter
                     Join::LEFT_JOIN,
                 );
             }
-            $metadata = $this->getNestedMetadata($resourceClass, $associations ?? []);
+
+            $metadata = $this->getNestedMetadata($resourceClass, $associations);
 
             if ($metadata->hasField($field)) {
-                $orX->add(
-                    $queryBuilder->expr()->like(
-                        $this->wrapCase(sprintf('%s.%s', $alias, $field)),
-                        (string)$queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'"),
+                $aliasedField = sprintf('%s.%s', $alias, $field);
+
+                if (! $this->caseSensitive) {
+                    $aliasedField = sprintf('LOWER(%s)', $aliasedField);
+                }
+
+                $ors[] = match ($strategy) {
+                    self::SEARCH_END => $queryBuilder->expr()->like(
+                        $aliasedField,
+                        (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName),
                     ),
-                );
+                    self::SEARCH_START => $queryBuilder->expr()->like(
+                        $aliasedField,
+                        (string) $queryBuilder->expr()->concat(':'.$parameterName, "'%'"),
+                    ),
+                    default => $queryBuilder->expr()->like(
+                        $aliasedField,
+                        (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'"),
+                    ),
+                };
             }
         }
 
+        if (! $ors) {
+            return;
+        }
+
         $queryBuilder
-            ->andWhere($orX)
+            ->andWhere($queryBuilder->expr()->orX(...$ors))
             ->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value))
         ;
     }
@@ -92,14 +117,5 @@ final class TextSearchFilter extends AbstractFilter
                 ],
             ],
         ];
-    }
-
-    private function wrapCase(string $alias): string
-    {
-        if ($this->caseSensitive) {
-            return $alias;
-        }
-
-        return sprintf('LOWER(%s)', $alias);
     }
 }
