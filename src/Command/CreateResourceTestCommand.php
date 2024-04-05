@@ -5,6 +5,7 @@ namespace Corerely\ApiPlatformHelperBundle\Command;
 
 use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
 use ApiPlatform\Util\Inflector;
+use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,6 +23,7 @@ class CreateResourceTestCommand extends Command
     public function __construct(
         private readonly string                                 $projectDir,
         private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
+        private readonly IdentifierMode                         $identifierMode,
     ) {
         parent::__construct();
     }
@@ -77,8 +79,8 @@ class CreateResourceTestCommand extends Command
         // Change namespace to Resource of doctrine entity too
         $namespace = str_replace('\\Entity', '\\Resource', $namespace);
 
-        $hasUuid = property_exists($resourceClassName, 'uuid');
-        $idGetter = $hasUuid ? 'getUuid()' : 'getId()';
+        $isUuidMode = $this->identifierMode->isUuid();
+        $idGetter = $isUuidMode ? 'getUuid()' : 'getId()';
 
         $file = fopen($fileAbsPath, 'w');
         $content = '
@@ -89,7 +91,7 @@ namespace %namespace%;
 
 use %resourceClassName%;
 use App\Factory\%factory%;
-use App\Tests\ApiTestCase;'.($hasUuid ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
+use App\Tests\ApiTestCase;'.($isUuidMode ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
 class %shortClassName%Test extends ApiTestCase
 {
@@ -99,7 +101,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %factory%::createMany(3);
 
-        $this->getClient()->get($this->url);
+        $this->createClientAdapter()->get($this->url);
 
         $this->assertResponseIsSuccessful();
     }
@@ -108,7 +110,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->get($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->get($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($this->serializeEntity(%var%, [
@@ -120,12 +122,12 @@ class %shortClassName%Test extends ApiTestCase
     {
         $data = [
             // @TODO Add data
-           '.($hasUuid ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
+           '.($isUuidMode ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
         ];
 
         %factory%::assert()->empty();
 
-        $this->getClient()->asAdmin()->post($this->url, $data);
+        $this->createClientAdapter()->asAdmin()->post($this->url, $data);
 
         $this->assertResponseIsCreated();
         %factory%::assert()->count(1);
@@ -140,7 +142,7 @@ class %shortClassName%Test extends ApiTestCase
         $data = [
             // Edit data
         ];
-        $this->getClient()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
+        $this->createClientAdapter()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($data);
@@ -152,7 +154,7 @@ class %shortClassName%Test extends ApiTestCase
 
         %factory%::assert()->count(1);
 
-        $this->getClient()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
@@ -165,7 +167,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %factory%::createMany(2);
 
-        $this->getClient()->{$method}($this->url);
+        $this->createClientAdapter()->{$method}($this->url);
 
         $this->assertResponseIsForbidden();
     }
@@ -183,7 +185,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->{$method}($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->{$method}($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsForbidden();
     }
