@@ -25,10 +25,10 @@
         "php": "^8.2",
         "api-platform/core": "^3.0",
         "symfony/http-kernel": "^6.4 || ^7.0",
-        "doctrine/orm": "^2.7"
+        "doctrine/orm": "*"
     },
     "require-dev": {
-        "doctrine/doctrine-bundle": "^2.5",
+        "doctrine/doctrine-bundle": "*",
         "slevomat/coding-standard": "^8.0",
         "phpunit/phpunit": "^10.0",
         "symfony/framework-bundle": "^6.4 || ^7.0",
