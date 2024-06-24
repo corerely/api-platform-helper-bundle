@@ -6,6 +6,7 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
+use Corerely\ApiPlatformHelperBundle\Test\FactoriesProxyHelper;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
@@ -13,6 +14,8 @@ use Symfony\Component\Uid\UuidV4;
 
 class UuidFilterTest extends AbstractDoctrineExtension
 {
+    use FactoriesProxyHelper;
+
     public function testFilterByUuid(): void
     {
         DummyFactory::createMany(3);
@@ -23,7 +26,7 @@ class UuidFilterTest extends AbstractDoctrineExtension
         DummyFactory::assert()->count(4);
 
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
-        $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with('/api/' . $uuid)->willReturn($dummy->object());
+        $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with('/api/' . $uuid)->willReturn($this->getRealEntityObject($dummy));
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
         $filter = new UuidFilter($mockIriConverter, $this->managerRegistry, properties: ['uuid' => null]);
