@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Factory;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\DummyAssociation;
-use Zenstruck\Foundry\ModelFactory;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-final class DummyAssociationFactory extends ModelFactory
+final class DummyAssociationFactory extends PersistentProxyObjectFactory
 {
 
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'description' => self::faker()->text(),
         ];
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return DummyAssociation::class;
     }

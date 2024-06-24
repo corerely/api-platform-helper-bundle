@@ -30,7 +30,7 @@ doctrine:
 
 zenstruck_foundry:
     # See full configuration: https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#full-default-bundle-configuration
-    auto_refresh_proxies: true
+    # auto_refresh_proxies: true
 
 api_platform:
     formats:
@@ -48,3 +48,4 @@ api_platform:
             rfc_7807_compliant_errors: true
     event_listeners_backward_compatibility_layer: false
     keep_legacy_inflector: false
+    use_symfony_listeners: true

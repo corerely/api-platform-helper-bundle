@@ -5,10 +5,11 @@ namespace Corerely\ApiPlatformHelperBundle\Test;
 
 use ApiPlatform\Symfony\Bundle\Test\Client;
 use Symfony\Contracts\HttpClient\ResponseInterface;
-use Zenstruck\Foundry\Proxy;
 
 class ClientAdapter
 {
+    use FactoriesProxyHelper;
+
     private ?object $user = null;
 
     private bool $isMultipartFormData = false;
@@ -109,11 +110,7 @@ class ClientAdapter
             $user = $this->userManager->getRegularUser();
         }
 
-        if ($user instanceof Proxy) {
-            $user = $user->object();
-        }
-
-        return $user;
+        return $this->getRealEntityObject($user);
     }
 
     protected function createClientOptions(array $data, array $files = null): array

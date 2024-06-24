@@ -9,13 +9,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
-use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\Test\Factories;
 use Zenstruck\Foundry\Test\ResetDatabase;
 
 abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 {
     use ResetDatabase, Factories;
+    use FactoriesProxyHelper;
 
     private PropertyAccessorInterface $propertyAccessor;
 
@@ -48,11 +48,9 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 
     protected function getItemIri(object $entity): string
     {
-        if ($entity instanceof Proxy) {
-            $entity = $entity->object();
-        }
-
-        return self::getContainer()->get('api_platform.iri_converter')->getIriFromResource($entity);
+        return self::getContainer()->get('api_platform.iri_converter')->getIriFromResource(
+            $this->getRealEntityObject($entity),
+        );
     }
 
     // Assert helpers
@@ -88,9 +86,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
         ];
         $serialized += $this->serializeCommonFields($entity);
 
-        if ($entity instanceof Proxy) {
-            $entity = $entity->object();
-        }
+        $entity = $this->getRealEntityObject($entity);
 
         $propertyAccessor = $this->getPropertyAccessor();
 
@@ -122,9 +118,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
     private function serializeCommonFields(object $entity): array
     {
         $serialized = [];
-        if ($entity instanceof Proxy) {
-            $entity = $entity->object();
-        }
+        $entity = $this->getRealEntityObject($entity);
 
         if (method_exists($entity, 'getUuid')) {
             $serialized['uuid'] = (string)$entity->getUuid();
@@ -149,7 +143,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
         return match (true) {
             $value instanceof \DateTimeInterface => $this->serializeDateTimeAsString($value),
             $value instanceof Collection => array_map(fn(object $item) => $this->getItemIri($item), $value->toArray()),
-            $value instanceof Proxy, is_object($value) && str_contains(ClassUtils::getClass($value), 'App\\Entity\\') => $this->getItemIri($value),
+            is_object($value) && ($this->isEntityProxy($value) || str_contains(ClassUtils::getClass($value), 'App\\Entity\\')) => $this->getItemIri($value),
             $value instanceof \Stringable => (string)$value,
             $value instanceof \BackedEnum => $value->value,
             is_float($value) => $this->preciseZeroFraction($value),

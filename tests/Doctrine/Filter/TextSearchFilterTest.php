@@ -10,7 +10,6 @@ use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyAssociationFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
 use Doctrine\ORM\QueryBuilder;
-use Zenstruck\Foundry\Proxy;
 
 class TextSearchFilterTest extends AbstractDoctrineExtension
 {
@@ -103,7 +102,7 @@ class TextSearchFilterTest extends AbstractDoctrineExtension
     }
 
     /**
-     * @return Proxy[]|Dummy[]
+     * @return Dummy[]|\Zenstruck\Foundry\Proxy[]|\Zenstruck\Foundry\Persistence\Proxy[]
      */
     private function fixtures(): array
     {
