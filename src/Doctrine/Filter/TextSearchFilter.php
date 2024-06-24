@@ -11,6 +11,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
+use Symfony\Component\PropertyInfo\Type;
 
 final class TextSearchFilter extends AbstractFilter
 {
@@ -108,13 +109,10 @@ final class TextSearchFilter extends AbstractFilter
 
         return [
             $this->parameterName => [
-                'property' => implode(', ', array_keys($this->properties)),
-                'type' => 'string',
+                'property' => $this->parameterName,
+                'type' => Type::BUILTIN_TYPE_STRING,
                 'required' => false,
-                'openapi' => [
-                    'description' => 'Selects entities where each search term is '.
-                        'found somewhere in at least one of the specified properties',
-                ],
+                'description' => 'Search in string properties: '.implode(', ', array_map(fn($property) => '"'.$property.'"', array_keys($this->properties))),
             ],
         ];
     }
