@@ -99,7 +99,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %factory%::createMany(3);
 
-        $this->getClient()->get($this->url);
+        $this->createClientAdapter()->get($this->url);
 
         $this->assertResponseIsSuccessful();
     }
@@ -108,7 +108,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->get($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->get($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($this->serializeEntity(%var%, [
@@ -125,7 +125,7 @@ class %shortClassName%Test extends ApiTestCase
 
         %factory%::assert()->empty();
 
-        $this->getClient()->asAdmin()->post($this->url, $data);
+        $this->createClientAdapter()->asAdmin()->post($this->url, $data);
 
         $this->assertResponseIsCreated();
         %factory%::assert()->count(1);
@@ -140,7 +140,7 @@ class %shortClassName%Test extends ApiTestCase
         $data = [
             // Edit data
         ];
-        $this->getClient()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
+        $this->createClientAdapter()->asAdmin()->put($this->url.\'/\'.%var%->%idGetter%, $data);
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonContains($data);
@@ -152,7 +152,7 @@ class %shortClassName%Test extends ApiTestCase
 
         %factory%::assert()->count(1);
 
-        $this->getClient()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->asAdmin()->delete($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsNoContent();
         %factory%::assert()->empty();
@@ -165,7 +165,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %factory%::createMany(2);
 
-        $this->getClient()->{$method}($this->url);
+        $this->createClientAdapter()->{$method}($this->url);
 
         $this->assertResponseIsForbidden();
     }
@@ -183,7 +183,7 @@ class %shortClassName%Test extends ApiTestCase
     {
         %var% = %factory%::createOne();
 
-        $this->getClient()->{$method}($this->url.\'/\'.%var%->%idGetter%);
+        $this->createClientAdapter()->{$method}($this->url.\'/\'.%var%->%idGetter%);
 
         $this->assertResponseIsForbidden();
     }

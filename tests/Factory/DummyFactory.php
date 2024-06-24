@@ -4,28 +4,23 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Factory;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\Dummy;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-/**
- * @method static Dummy|Proxy createOne(array $attributes = [])
- * @method static Dummy[]|Proxy[] createMany(int $number, $attributes = [])
- */
-final class DummyFactory extends ModelFactory
+final class DummyFactory extends PersistentProxyObjectFactory
 {
     public function withAssociations(int $quantity = 2): self
     {
-        return $this->addState(static fn() => ['dummyAssociations' => DummyAssociationFactory::new()->many($quantity)]);
+        return $this->with(static fn() => ['dummyAssociations' => DummyAssociationFactory::new()->many($quantity)]);
     }
 
-    protected function getDefaults(): array
+    protected function defaults(): array
     {
         return [
             'name' => self::faker()->words(asText: true),
         ];
     }
 
-    protected static function getClass(): string
+    public static function class(): string
     {
         return Dummy::class;
     }
