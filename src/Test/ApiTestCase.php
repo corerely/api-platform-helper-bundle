@@ -142,7 +142,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
     {
         return match (true) {
             $value instanceof \DateTimeInterface => $this->serializeDateTimeAsString($value),
-            $value instanceof Collection => array_map(static fn(object $item) => $this->getItemIri($item), $value->toArray()),
+            $value instanceof Collection => array_map(fn(object $item) => $this->getItemIri($item), $value->toArray()),
             is_object($value) && ($this->isEntityProxy($value) || str_contains(ClassUtils::getClass($value), 'App\\Entity\\')) => $this->getItemIri($value),
             $value instanceof \Stringable => (string)$value,
             $value instanceof \BackedEnum => $value->value,
