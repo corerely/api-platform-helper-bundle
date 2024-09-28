@@ -112,7 +112,7 @@ final class TextSearchFilter extends AbstractFilter
                 'property' => $this->parameterName,
                 'type' => Type::BUILTIN_TYPE_STRING,
                 'required' => false,
-                'description' => 'Search in string properties: '.implode(', ', array_map(fn($property) => '"'.$property.'"', array_keys($this->properties))),
+                'description' => 'Search in string properties: '.implode(', ', array_map(static fn(string $property): string => '"'.$property.'"', array_keys($this->properties))),
             ],
         ];
     }
