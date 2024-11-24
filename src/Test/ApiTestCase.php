@@ -81,9 +81,13 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 
     protected function serializeEntity(object $entity, array $properties): array
     {
-        $serialized = [
-            '@id' => $this->getItemIri($entity),
-        ];
+        $id = $this->getItemIri($entity);
+        $serialized = [];
+
+        if (! str_contains($id, '/.well-known/genid/')) {
+            $serialized['@id'] = $id;
+        }
+
         $serialized += $this->serializeCommonFields($entity);
 
         $entity = $this->getRealEntityObject($entity);
@@ -121,7 +125,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
         $entity = $this->getRealEntityObject($entity);
 
         if (method_exists($entity, 'getUuid')) {
-            $serialized['uuid'] = (string)$entity->getUuid();
+            $serialized['uuid'] = (string) $entity->getUuid();
         }
 
         if (method_exists($entity, 'getPosition')) {
@@ -144,7 +148,7 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
             $value instanceof \DateTimeInterface => $this->serializeDateTimeAsString($value),
             $value instanceof Collection => array_map(fn(object $item) => $this->getItemIri($item), $value->toArray()),
             is_object($value) && ($this->isEntityProxy($value) || str_contains(ClassUtils::getClass($value), 'App\\Entity\\')) => $this->getItemIri($value),
-            $value instanceof \Stringable => (string)$value,
+            $value instanceof \Stringable => (string) $value,
             $value instanceof \BackedEnum => $value->value,
             is_float($value) => $this->preciseZeroFraction($value),
             is_array($value) => array_map($this->serializeValue(...), $value),
@@ -154,8 +158,8 @@ abstract class ApiTestCase extends \ApiPlatform\Symfony\Bundle\Test\ApiTestCase
 
     protected function preciseZeroFraction(float $value): int|float
     {
-        if ($value === (float)(int)$value) {
-            return (int)$value;
+        if ($value === (float) (int) $value) {
+            return (int) $value;
         }
 
         return $value;
