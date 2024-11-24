@@ -36,6 +36,29 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         self::assertSame($dummy->getId(), $result[0]->getId());
     }
 
+    public function testFilterWithNumbericIriId(): void
+    {
+        DummyFactory::createMany(3);
+
+        $dummy = DummyFactory::createOne();
+        $id = (string) $dummy->getId();
+
+        DummyFactory::assert()->count(4);
+
+        $mockIriConverter = $this->createMock(IriConverterInterface::class);
+        $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with($id)->willReturn($dummy);
+
+        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
+
+        $queryBuilder = $this->repository->createQueryBuilder('o');
+        $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $id]]);
+
+        $result = $queryBuilder->getQuery()->getResult();
+
+        self::assertCount(1, $result);
+        self::assertSame($dummy->getId(), $result[0]->getId());
+    }
+
     public function testFilterWithIriIds(): void
     {
         DummyFactory::createMany(3);
