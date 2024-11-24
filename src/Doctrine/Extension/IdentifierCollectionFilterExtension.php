@@ -46,6 +46,10 @@ final readonly class IdentifierCollectionFilterExtension implements QueryCollect
      */
     protected function getIdFromIri(string $iri): int|string|null
     {
+        if (is_numeric($iri) && $this->identifierMode === IdentifierMode::ID) {
+            return (int) $iri;
+        }
+
         try {
             $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
 
@@ -54,8 +58,7 @@ final readonly class IdentifierCollectionFilterExtension implements QueryCollect
                 IdentifierMode::UUID => $item->getUuid()->toBinary(),
             };
         } catch (InvalidArgumentException|ItemNotFoundException) {
+            return null;
         }
-
-        return null;
     }
 }
