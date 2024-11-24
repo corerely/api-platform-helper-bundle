@@ -46,7 +46,7 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         DummyFactory::assert()->count(4);
 
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
-        $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with($id)->willReturn($dummy);
+        $mockIriConverter->expects($this->never())->method('getResourceFromIri');
 
         $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
 
