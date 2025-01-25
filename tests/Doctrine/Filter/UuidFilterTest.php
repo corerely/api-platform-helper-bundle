@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Filter;
 
-use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
+use ApiPlatform\Metadata\IriConverterInterface;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
 use Corerely\ApiPlatformHelperBundle\Test\FactoriesProxyHelper;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 
-use ApiPlatform\Api\IriConverterInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
+use ApiPlatform\Metadata\IriConverterInterface;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
@@ -12,7 +12,7 @@ use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 
 class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
 {
-    
+
     public function testFilterWithIriId(): void
     {
         DummyFactory::createMany(3);
