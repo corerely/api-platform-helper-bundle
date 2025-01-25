@@ -91,7 +91,8 @@ namespace %namespace%;
 
 use %resourceClassName%;
 use App\Factory\%factory%;
-use App\Tests\ApiTestCase;'.($isUuidMode ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
+use App\Tests\ApiTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;'.($isUuidMode ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
 
 class %shortClassName%Test extends ApiTestCase
 {
@@ -160,9 +161,7 @@ class %shortClassName%Test extends ApiTestCase
         %factory%::assert()->empty();
     }
 
-    /**
-     * @dataProvider collectionMethodDataProvider
-     */
+    #[DataProvider(\'collectionMethodDataProvider\')]
     public function testCollectionEndpointsAsUser(string $method): void
     {
         %factory%::createMany(2);
@@ -172,15 +171,13 @@ class %shortClassName%Test extends ApiTestCase
         $this->assertResponseIsForbidden();
     }
 
-    public function collectionMethodDataProvider(): iterable
+    public static function collectionMethodDataProvider(): iterable
     {
         yield \'get_collection\' => [\'get\'];
         yield \'create_collection\' => [\'post\'];
     }
 
-    /**
-     * @dataProvider itemMethodDataProvider
-     */
+    #[DataProvider(\'itemMethodDataProvider\')]
     public function testItemEndpointsAsUser(string $method): void
     {
         %var% = %factory%::createOne();
@@ -190,7 +187,7 @@ class %shortClassName%Test extends ApiTestCase
         $this->assertResponseIsForbidden();
     }
 
-    public function itemMethodDataProvider(): iterable
+    public static function itemMethodDataProvider(): iterable
     {
         yield \'get_item\' => [\'get\'];
         yield \'edit_item\' => [\'put\'];
