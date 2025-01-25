@@ -106,7 +106,7 @@ Run command to create new resource test
 php ./bin/console corerely:create-resource-test EntityName
 ```
 
-This will create test for entity resource `App\Entity\EntityName` in `corerely.api_platform_helper.resources_test_folder` folder.
+This will create test for entity resource `App\Entity\EntityName` in `tests/Resource` folder.
 
 **Create abstract class for test**
 
