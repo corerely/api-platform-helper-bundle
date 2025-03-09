@@ -26,7 +26,8 @@ doctrine:
                 prefix: 'Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity'
                 alias: App
         controller_resolver:
-            auto_mapping: true
+            auto_mapping: false
+            enabled: false
 
 zenstruck_foundry:
     # See full configuration: https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#full-default-bundle-configuration
