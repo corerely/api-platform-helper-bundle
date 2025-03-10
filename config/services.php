@@ -7,6 +7,7 @@ use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\OrderByFieldsExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\PermanentFilterExtension;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\TextSearchFilter;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Filter\UuidFilter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
@@ -21,6 +22,7 @@ return static function (ContainerConfigurator $containerConfigurator): void {
         ->arg(0, new Parameter('kernel.project_dir'))
         ->arg(1, new Reference('api_platform.metadata.resource.name_collection_factory'))
         ->arg(2, new Parameter('corerely.api_platform_helper.identifier_mode'))
+        ->arg(3, new Reference('api_platform.inflector', ContainerInterface::NULL_ON_INVALID_REFERENCE))
     ;
 
     $services->set('corerely.api_platform_helper.doctrine.permanent_filter_extension', PermanentFilterExtension::class)
