@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace Corerely\ApiPlatformHelperBundle\Command;
 
+use ApiPlatform\Metadata\InflectorInterface;
 use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
-use ApiPlatform\Util\Inflector;
+use ApiPlatform\Metadata\Util\Inflector;
 use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -24,6 +25,7 @@ class CreateResourceTestCommand extends Command
         private readonly string                                 $projectDir,
         private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
         private readonly IdentifierMode                         $identifierMode,
+        private readonly InflectorInterface                     $inflector = new Inflector(),
     ) {
         parent::__construct();
     }
@@ -73,7 +75,7 @@ class CreateResourceTestCommand extends Command
 
         $var = '$'.lcfirst($shortClassName);
         $factory = $shortClassName.'Factory';
-        $url = Inflector::tableize(Inflector::pluralize($shortClassName));
+        $url = $this->inflector->tableize($this->inflector->pluralize($shortClassName));
 
         $namespace = sprintf('App\\Tests\\%s', $innerNamespace);
         // Change namespace to Resource of doctrine entity too
