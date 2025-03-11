@@ -60,7 +60,7 @@ class ClientAdapter
         return $this;
     }
 
-    public function get(string $url, array $queryParams = null): ResponseInterface
+    public function get(string $url, ?array $queryParams = null): ResponseInterface
     {
         if ($queryParams) {
             $url .= str_contains($url, '?') ? '&' : '?'.http_build_query($queryParams);
@@ -69,17 +69,17 @@ class ClientAdapter
         return $this->authenticateClient()->request('GET', $url);
     }
 
-    public function post(string $url, array $data = [], array $files = null): ResponseInterface
+    public function post(string $url, array $data = [], ?array $files = null): ResponseInterface
     {
         return $this->authenticateClient()->request('POST', $url, $this->createClientOptions($data, $files));
     }
 
-    public function put(string $url, array $data = [], array $files = null): ResponseInterface
+    public function put(string $url, array $data = [], ?array $files = null): ResponseInterface
     {
         return $this->authenticateClient()->request('PUT', $url, $this->createClientOptions($data, $files));
     }
 
-    public function patch(string $url, array $data = [], array $files = null): ResponseInterface
+    public function patch(string $url, array $data = [], ?array $files = null): ResponseInterface
     {
         $options = $this->createClientOptions($data, $files) + [
                 'headers' => ['Content-Type' => 'application/merge-patch+json'],
@@ -113,7 +113,7 @@ class ClientAdapter
         return $this->getRealEntityObject($user);
     }
 
-    protected function createClientOptions(array $data, array $files = null): array
+    protected function createClientOptions(array $data, ?array $files = null): array
     {
         if ($this->isMultipartFormData) {
             return [
