@@ -23,7 +23,7 @@ final readonly class IdentifierCollectionFilterExtension implements QueryCollect
     ) {
     }
 
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         $value = $this->normalizeValue($context['filters']['id'] ?? null);
         if (! $value) {

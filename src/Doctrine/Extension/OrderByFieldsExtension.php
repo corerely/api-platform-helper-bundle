@@ -22,7 +22,7 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
     ) {
     }
 
-    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
+    public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         $filterValue = $context['filters'][$this->paramName] ?? null;
         $intersect = array_values(

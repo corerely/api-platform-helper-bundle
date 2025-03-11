@@ -27,7 +27,7 @@ final class UuidFilter extends AbstractFilter
     public function __construct(
         private readonly IriConverterInterface $iriConverter,
         ManagerRegistry                        $managerRegistry,
-        LoggerInterface                        $logger = null,
+        ?LoggerInterface                       $logger = null,
         ?array                                 $properties = null,
         ?NameConverterInterface                $nameConverter = null,
     ) {
@@ -56,7 +56,7 @@ final class UuidFilter extends AbstractFilter
         return $description;
     }
 
-    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
+    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         if (null === $value ||
             ! $this->isPropertyEnabled($property, $resourceClass) ||
