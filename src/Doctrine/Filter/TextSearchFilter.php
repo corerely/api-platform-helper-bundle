@@ -22,7 +22,7 @@ final class TextSearchFilter extends AbstractFilter
 
     public function __construct(
         ManagerRegistry         $managerRegistry,
-        LoggerInterface         $logger = null,
+        ?LoggerInterface        $logger = null,
         ?array                  $properties = null,
         ?NameConverterInterface $nameConverter = null,
         private readonly string $parameterName = 'q',
@@ -31,7 +31,7 @@ final class TextSearchFilter extends AbstractFilter
         parent::__construct($managerRegistry, $logger, $properties, $nameConverter);
     }
 
-    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = []): void
+    protected function filterProperty(string $property, mixed $value, QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
 
         // If filter property is not a "q"
