@@ -23,7 +23,7 @@ class DummyAssociation
     #[ORM\ManyToOne(targetEntity: Dummy::class, inversedBy: 'dummyAssociations')]
     private ?Dummy $dummy = null;
 
-    public function __construct(Uuid $uuid = null)
+    public function __construct(?Uuid $uuid = null)
     {
         $this->uuid = $uuid ?? Uuid::v4();
     }
