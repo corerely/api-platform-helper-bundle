@@ -25,7 +25,7 @@ class Dummy
     #[ORM\OneToMany(mappedBy: 'dummy', targetEntity: DummyAssociation::class)]
     private Collection $dummyAssociations;
 
-    public function __construct(Uuid $uuid = null)
+    public function __construct(?Uuid $uuid = null)
     {
         $this->uuid = $uuid ?? Uuid::v4();
         $this->dummyAssociations = new ArrayCollection();

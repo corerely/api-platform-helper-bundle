@@ -57,7 +57,7 @@ use Doctrine\ORM\QueryBuilder;
 
 class OwnerPermanentFilter implements PermanentFilterInterface
 {
-    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, Operation $operation = null, array $context = [], array $options = [], array $identifiers = null): void
+    public function apply(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = [], array $options = [], ?array $identifiers = null): void
     {
         $rootAlis = $queryBuilder->getRootAliases()[0];
         $param = $queryNameGenerator->generateParameterName('owner');
