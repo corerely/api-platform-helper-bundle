@@ -7,13 +7,14 @@ use ApiPlatform\Doctrine\Orm\Filter\AbstractFilter;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 use Symfony\Component\PropertyInfo\Type;
 
-final class TextSearchFilter extends AbstractFilter
+class TextSearchFilter extends AbstractFilter
 {
 
     public const SEARCH_START = 'start';
@@ -46,59 +47,15 @@ final class TextSearchFilter extends AbstractFilter
         }
 
         $parameterName = $queryNameGenerator->generateParameterName($this->parameterName);
-        $ors = [];
+        $orX = $queryBuilder->expr()->orX();
 
         foreach ($this->properties as $property => $strategy) {
-            $strategy ??= self::SEARCH_PARTIAL;
-            $alias = $queryBuilder->getRootAliases()[0];
-            $field = $property;
-
-            $associations = [];
-            if ($this->isPropertyNested($property, $resourceClass)) {
-                [$alias, $field, $associations] = $this->addJoinsForNestedProperty(
-                    $property,
-                    $alias,
-                    $queryBuilder,
-                    $queryNameGenerator,
-                    $resourceClass,
-                    Join::LEFT_JOIN,
-                );
-            }
-
-            $metadata = $this->getNestedMetadata($resourceClass, $associations);
-
-            if ($metadata->hasField($field)) {
-                $aliasedField = sprintf('%s.%s', $alias, $field);
-
-                if (! $this->caseSensitive) {
-                    $aliasedField = sprintf('LOWER(%s)', $aliasedField);
-                }
-
-                $ors[] = match ($strategy) {
-                    self::SEARCH_END => $queryBuilder->expr()->like(
-                        $aliasedField,
-                        (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName),
-                    ),
-                    self::SEARCH_START => $queryBuilder->expr()->like(
-                        $aliasedField,
-                        (string) $queryBuilder->expr()->concat(':'.$parameterName, "'%'"),
-                    ),
-                    default => $queryBuilder->expr()->like(
-                        $aliasedField,
-                        (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'"),
-                    ),
-                };
-            }
+            $this->applyPropertySearch($value, $property, $strategy, $queryBuilder, $queryNameGenerator, $orX, $resourceClass);
         }
 
-        if (! $ors) {
-            return;
+        if ($orX->count() > 0) {
+            $queryBuilder->andWhere($orX);
         }
-
-        $queryBuilder
-            ->andWhere($queryBuilder->expr()->orX(...$ors))
-            ->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value))
-        ;
     }
 
     public function getDescription(string $resourceClass): array
@@ -115,5 +72,61 @@ final class TextSearchFilter extends AbstractFilter
                 'description' => 'Search in string properties: '.implode(', ', array_map(static fn(string $property): string => '"'.$property.'"', array_keys($this->properties))),
             ],
         ];
+    }
+
+    protected function applyPropertySearch(
+        string                      $value,
+        string                      $property,
+        ?string                     $strategy,
+        QueryBuilder                $queryBuilder,
+        QueryNameGeneratorInterface $queryNameGenerator,
+        Orx                         $orX,
+        string                      $resourceClass,
+    ): void {
+        $strategy ??= self::SEARCH_PARTIAL;
+
+        $alias = $queryBuilder->getRootAliases()[0];
+        $parameterName = $queryNameGenerator->generateParameterName($property);
+        $field = $property;
+
+        $associations = [];
+        if ($this->isPropertyNested($property, $resourceClass)) {
+            [$alias, $field, $associations] = $this->addJoinsForNestedProperty(
+                $property,
+                $alias,
+                $queryBuilder,
+                $queryNameGenerator,
+                $resourceClass,
+                Join::LEFT_JOIN,
+            );
+        }
+
+        $metadata = $this->getNestedMetadata($resourceClass, $associations);
+
+        if ($metadata->hasField($field)) {
+            $aliasedField = sprintf('%s.%s', $alias, $field);
+
+            if (! $this->caseSensitive) {
+                $aliasedField = sprintf('LOWER(%s)', $aliasedField);
+            }
+
+            $or = match ($strategy) {
+                self::SEARCH_END => $queryBuilder->expr()->like(
+                    $aliasedField,
+                    (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName),
+                ),
+                self::SEARCH_START => $queryBuilder->expr()->like(
+                    $aliasedField,
+                    (string) $queryBuilder->expr()->concat(':'.$parameterName, "'%'"),
+                ),
+                default => $queryBuilder->expr()->like(
+                    $aliasedField,
+                    (string) $queryBuilder->expr()->concat("'%'", ':'.$parameterName, "'%'"),
+                ),
+            };
+
+            $orX->add($or);
+            $queryBuilder->setParameter($parameterName, $this->caseSensitive ? $value : strtolower($value));
+        }
     }
 }
