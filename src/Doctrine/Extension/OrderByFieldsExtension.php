@@ -9,7 +9,7 @@ use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use Doctrine\ORM\QueryBuilder;
 
-final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
+final readonly class OrderByFieldsExtension implements QueryCollectionExtensionInterface
 {
 
     /**
@@ -17,8 +17,8 @@ final class OrderByFieldsExtension implements QueryCollectionExtensionInterface
      * @var array $fields ['createdAt', 'updatedAt']
      */
     public function __construct(
-        private readonly string $paramName,
-        private readonly array  $fields,
+        private string $paramName,
+        private array  $fields,
     ) {
     }
 

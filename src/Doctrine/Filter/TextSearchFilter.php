@@ -11,14 +11,13 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
-use Symfony\Component\PropertyInfo\Type;
 
 final class TextSearchFilter extends AbstractFilter
 {
 
-    public const SEARCH_START = 'start';
-    public const SEARCH_END = 'end';
-    public const SEARCH_PARTIAL = 'partial';
+    public const string SEARCH_START = 'start';
+    public const string SEARCH_END = 'end';
+    public const string SEARCH_PARTIAL = 'partial';
 
     public function __construct(
         ManagerRegistry         $managerRegistry,
@@ -110,7 +109,7 @@ final class TextSearchFilter extends AbstractFilter
         return [
             $this->parameterName => [
                 'property' => $this->parameterName,
-                'type' => Type::BUILTIN_TYPE_STRING,
+                'type' => 'string',
                 'required' => false,
                 'description' => 'Search in string properties: '.implode(', ', array_map(static fn(string $property): string => '"'.$property.'"', array_keys($this->properties))),
             ],
