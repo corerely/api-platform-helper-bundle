@@ -12,11 +12,11 @@ use Corerely\ApiPlatformHelperBundle\Doctrine\PermanentFilter\PermanentFilterInt
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\DependencyInjection\ServiceLocator;
 
-final class PermanentFilterExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
+final readonly class PermanentFilterExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
 
     public function __construct(
-        private readonly ServiceLocator $locator,
+        private ServiceLocator $locator,
     ) {
     }
 
