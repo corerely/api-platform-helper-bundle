@@ -10,7 +10,8 @@ use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\IriConverterInterface;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
-use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\QueryBuilder;
 
 final readonly class IdentifierCollectionFilterExtension implements QueryCollectionExtensionInterface
@@ -19,24 +20,23 @@ final readonly class IdentifierCollectionFilterExtension implements QueryCollect
 
     public function __construct(
         private IriConverterInterface $iriConverter,
-        private IdentifierMode        $identifierMode,
     ) {
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?Operation $operation = null, array $context = []): void
     {
         $value = $this->normalizeValue($context['filters']['id'] ?? null);
-        if (! $value) {
+        if (!$value) {
             return;
         }
 
-        $ids = array_filter(array_map($this->getIdFromIri(...), $value));
-        if (! $ids) {
+        $ids = array_filter(array_map(fn(mixed $v) => $this->getIdFromIri($queryBuilder->getEntityManager(), $v), $value));
+        if (!$ids) {
             return;
         }
 
         $alias = $queryBuilder->getRootAliases()[0];
-        $property = $this->identifierMode->identifierColumnName();
+        $property = 'id';
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $property, $ids);
     }
@@ -44,21 +44,32 @@ final readonly class IdentifierCollectionFilterExtension implements QueryCollect
     /**
      * Gets the ID from an IRI or a raw ID.
      */
-    protected function getIdFromIri(string $iri): int|string|null
+    protected function getIdFromIri(EntityManagerInterface $em, string $iri): int|string|null
     {
-        if (is_numeric($iri) && $this->identifierMode === IdentifierMode::ID) {
+        if (is_numeric($iri)) {
             return (int) $iri;
         }
 
         try {
             $item = $this->iriConverter->getResourceFromIri($iri, ['fetch_data' => false]);
-
-            return match ($this->identifierMode) {
-                IdentifierMode::ID => $item->getId(),
-                IdentifierMode::UUID => $item->getUuid()->toBinary(),
-            };
-        } catch (InvalidArgumentException|ItemNotFoundException) {
+        } catch (InvalidArgumentException|ItemNotFoundException|EntityNotFoundException) {
             return null;
         }
+
+        try {
+            $manager = $em->getClassMetadata($item::class);
+            $identifiers = $manager->getIdentifierValues($item);
+
+            return [] === $identifiers ? null : reset($identifiers);
+        } catch (\Doctrine\Persistence\Mapping\MappingException) {
+        }
+
+        // Non-Doctrine resource (e.g. a mapped DTO): read its identifier directly.
+        if (method_exists($item, 'getId')) {
+            return $item->getId();
+        }
+
+        $reflection = new \ReflectionObject($item);
+        return $reflection->hasProperty('id') ? (int) $reflection->getProperty('id')->getValue($item) : null;
     }
 }

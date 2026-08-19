@@ -12,7 +12,6 @@ use ApiPlatform\Exception\ItemNotFoundException;
 use ApiPlatform\Metadata\IriConverterInterface;
 use ApiPlatform\Metadata\Operation;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Common\FilterByIdsCommonTrait;
-use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -87,7 +86,7 @@ final class UuidFilter extends AbstractFilter
 
         if ($metadata->hasAssociation($field)) {
             $alias = QueryBuilderHelper::addJoinOnce($queryBuilder, $queryNameGenerator, $alias, $field);
-            $field = IdentifierMode::UUID->identifierColumnName();
+            $field = 'id';
         }
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);

@@ -6,7 +6,6 @@ namespace Corerely\ApiPlatformHelperBundle\Tests\Doctrine\Extension;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGenerator;
 use ApiPlatform\Metadata\IriConverterInterface;
 use Corerely\ApiPlatformHelperBundle\Doctrine\Extension\IdentifierCollectionFilterExtension;
-use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Corerely\ApiPlatformHelperBundle\Tests\Doctrine\AbstractDoctrineExtension;
 use Corerely\ApiPlatformHelperBundle\Tests\Factory\DummyFactory;
 
@@ -25,7 +24,7 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
         $mockIriConverter->expects($this->once())->method('getResourceFromIri')->with($iri)->willReturn($dummy);
 
-        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
+        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $iri]]);
@@ -48,7 +47,7 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
         $mockIriConverter->expects($this->never())->method('getResourceFromIri');
 
-        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
+        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter);
 
         $queryBuilder = $this->repository->createQueryBuilder('o');
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => $id]]);
@@ -74,7 +73,7 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
         $mockIriConverter->expects($this->exactly(2))->method('getResourceFromIri')->willReturnOnConsecutiveCalls($dummy1, $dummy2);
 
-        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
+        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter);
 
         $queryBuilder = $this->createQueryBuilder();
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName, context: ['filters' => ['id' => [$iri1, $iri2]]]);
@@ -94,7 +93,7 @@ class IdentifierCollectionFilterExtensionTest extends AbstractDoctrineExtension
         $mockIriConverter = $this->createMock(IriConverterInterface::class);
         $mockIriConverter->expects($this->never())->method('getResourceFromIri');
 
-        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter, IdentifierMode::ID);
+        $filterExtension = new IdentifierCollectionFilterExtension($mockIriConverter);
 
         $queryBuilder = $this->createQueryBuilder();
         $filterExtension->applyToCollection($queryBuilder, new QueryNameGenerator(), $this->entityClassName);
