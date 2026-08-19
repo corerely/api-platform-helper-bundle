@@ -6,7 +6,6 @@ namespace Corerely\ApiPlatformHelperBundle\Command;
 use ApiPlatform\Metadata\InflectorInterface;
 use ApiPlatform\Metadata\Resource\Factory\ResourceNameCollectionFactoryInterface;
 use ApiPlatform\Metadata\Util\Inflector;
-use Corerely\ApiPlatformHelperBundle\Doctrine\IdentifierMode;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +23,6 @@ class CreateResourceTestCommand extends Command
     public function __construct(
         private readonly string                                 $projectDir,
         private readonly ResourceNameCollectionFactoryInterface $resourceNameCollectionFactory,
-        private readonly IdentifierMode                         $identifierMode,
         private readonly InflectorInterface                     $inflector = new Inflector(),
     ) {
         parent::__construct();
@@ -81,8 +79,7 @@ class CreateResourceTestCommand extends Command
         // Change namespace to Resource of doctrine entity too
         $namespace = str_replace('\\Entity', '\\Resource', $namespace);
 
-        $isUuidMode = $this->identifierMode->isUuid();
-        $idGetter = $isUuidMode ? 'getUuid()' : 'getId()';
+        $idGetter = 'getId()';
 
         $file = fopen($fileAbsPath, 'w');
         $content = '
@@ -94,7 +91,7 @@ namespace %namespace%;
 use %resourceClassName%;
 use App\Factory\%factory%;
 use App\Tests\ApiTestCase;
-use PHPUnit\Framework\Attributes\DataProvider;'.($isUuidMode ? (PHP_EOL.'use Symfony\Component\Uid\Uuid;') : '').'
+use PHPUnit\Framework\Attributes\DataProvider;'.'
 
 class %shortClassName%Test extends ApiTestCase
 {
@@ -125,7 +122,6 @@ class %shortClassName%Test extends ApiTestCase
     {
         $data = [
             // @TODO Add data
-           '.($isUuidMode ? (PHP_EOL.'\'uuid\' => (string)Uuid::v4(),') : '').'
         ];
 
         %factory%::assert()->empty();

@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace Corerely\ApiPlatformHelperBundle\Tests\Factory;
 
 use Corerely\ApiPlatformHelperBundle\Tests\Fixtures\Entity\DummyAssociation;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
-final class DummyAssociationFactory extends PersistentProxyObjectFactory
+final class DummyAssociationFactory extends \Zenstruck\Foundry\Persistence\PersistentObjectFactory
 {
 
     protected function defaults(): array

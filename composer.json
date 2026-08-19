@@ -22,7 +22,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": "^8.3",
+        "php": "^8.4",
         "api-platform/doctrine-orm": "^4.0",
         "api-platform/symfony": "^4.0",
         "symfony/http-kernel": "^7.0",
@@ -38,9 +38,9 @@
         "symfony/yaml": "^7.0",
         "symfony/uid": "^7.0",
         "zenstruck/foundry": "^2.0",
-        "matthiasnoback/symfony-dependency-injection-test": "^5.0",
+        "matthiasnoback/symfony-dependency-injection-test": "^6.0",
         "symfony/http-client": "^7.0",
-        "squizlabs/php_codesniffer": "^3.11"
+        "squizlabs/php_codesniffer": "^4.0"
     },
     "config": {
         "allow-plugins": true
