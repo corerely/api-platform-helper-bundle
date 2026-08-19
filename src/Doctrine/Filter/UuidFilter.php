@@ -86,7 +86,7 @@ final class UuidFilter extends AbstractFilter
 
         if ($metadata->hasAssociation($field)) {
             $alias = QueryBuilderHelper::addJoinOnce($queryBuilder, $queryNameGenerator, $alias, $field);
-            $field = 'id';
+            $field = 'uuid'; // TODO make it configurable
         }
 
         $this->andWhere($queryBuilder, $queryNameGenerator, $alias, $field, $uuids);
