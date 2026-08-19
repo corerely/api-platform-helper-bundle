@@ -25,21 +25,21 @@
         "php": "^8.4",
         "api-platform/doctrine-orm": "^4.0",
         "api-platform/symfony": "^4.0",
-        "symfony/http-kernel": "^8.0",
-        "doctrine/orm": "^3.6"
+        "symfony/http-kernel": "^7.0",
+        "doctrine/orm": "*"
     },
     "require-dev": {
-        "doctrine/doctrine-bundle": "^2.18",
+        "doctrine/doctrine-bundle": "*",
         "slevomat/coding-standard": "^8.0",
         "phpunit/phpunit": "^11.0",
-        "symfony/framework-bundle": "^8.0",
-        "symfony/phpunit-bridge": "^8.0",
-        "symfony/property-access": "^8.0",
-        "symfony/yaml": "^8.0",
-        "symfony/uid": "^8.0",
+        "symfony/framework-bundle": "^7.0",
+        "symfony/phpunit-bridge": "^7.0",
+        "symfony/property-access": "^7.0",
+        "symfony/yaml": "^7.0",
+        "symfony/uid": "^7.0",
         "zenstruck/foundry": "^2.0",
         "matthiasnoback/symfony-dependency-injection-test": "^6.0",
-        "symfony/http-client": "^8.0",
+        "symfony/http-client": "^7.0",
         "squizlabs/php_codesniffer": "^4.0"
     },
     "config": {
